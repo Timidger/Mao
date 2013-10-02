@@ -63,7 +63,7 @@ class RuleHandler(object):
         """If the rule is not in the rules, adds it to the rules. If the
         rulewas added, returns True. Else, returns False"""
         if rule not in self.rules:
-            self.rules.update({rule: RuleGenerator.codify(rule.script)})
+            self.rules.update({rule: RuleGenerator.codify(rule)})
             return True
         else:
             return False

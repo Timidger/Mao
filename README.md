@@ -1,4 +1,1 @@
-Mao
-===
-
-Computerised version of the popular card game
+Unlike most adaptations of the card game, you can create rules by programming them in with simple commands and logic branches

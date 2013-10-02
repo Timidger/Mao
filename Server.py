@@ -350,7 +350,7 @@ if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
     from RuleHandler import RuleHandler, RuleGenerator
     from Rule import Rule
-    rules = [Rule('Test Rule', None, 'Set a to exit()')]
+    rules = (Rule('Test Rule', None, 'Set a to exit()'),)
     RH = RuleHandler(rules)
     PH = PlayerHandler([])
     ip = config_parser.get('Misc.', 'ip')

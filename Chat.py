@@ -80,3 +80,8 @@ if __name__ == '__main__':
     chat = Chat(root, client = Client)
 
     root.mainloop()
+
+    print Client.is_running()
+    del (Client)
+    print root
+    del (root)
