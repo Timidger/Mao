@@ -86,7 +86,7 @@ class Server(object):
                                config_parser.getint('Cards', 'hand_size')))
 
     @staticmethod
-    def send(data, client):
+    def send(data, client, timeout = None):
         "Send some data (pickled) to the client"
         pickled = pickle.dumps(data) +  ';'
         client.send(str(len(pickled)) + ':')
@@ -350,7 +350,7 @@ if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
     from RuleHandler import RuleHandler, RuleGenerator
     from Rule import Rule
-    rules = (Rule('Test Rule', None, 'Set a to exit()'),)
+    rules = [Rule('Test Rule', None, 'Set a to exit()')]
     RH = RuleHandler(rules)
     PH = PlayerHandler([])
     ip = config_parser.get('Misc.', 'ip')

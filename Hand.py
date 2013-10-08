@@ -5,7 +5,7 @@ Created on Fri Aug  9 09:13:12 2013
 @author: timidger
 """
 
-import Tkinter, Queue, threading, time
+import Tkinter, Queue, threading
 from Card import Card
 from Client import Client
 from OptionsParser import config_parser
@@ -57,9 +57,8 @@ class Hand(Tkinter.Frame, object):
     def send_card(self, card):
         self.cards.pop(card).destroy()
         self.Client.player.hand.remove(card)
-        #self.clear_hand()
         self.update_hand()
-        self._send_lock.acquire() # Do I need this here?
+        self._send_lock.acquire()
         self.Client.send(card)
         self._send_lock.release()
         print 'Sent: {}!'.format(card.rank + ' of ' + card.suit)
@@ -99,14 +98,5 @@ if __name__ == '__main__':
     Client = Client(port, ip, name)
     root = Tkinter.Tk()
     hand = Hand(root, Client)
-
-    #REMOVE THIS
-    def remove_multiple():
-        buttons = []
-        buttons.extend(hand.cards.itervalues())
-        for button in buttons[0:5]:
-            time.sleep(.1)
-            button.invoke()
-    #threading.Timer(function = remove_multiple, interval = 5).start()
 
     root.mainloop()

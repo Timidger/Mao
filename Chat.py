@@ -77,11 +77,5 @@ if __name__ == '__main__':
     name = raw_input('Name (Nothing for Timidger): ') or 'Timidger'
     Client = Client(port, ip, name)
     root = Tkinter.Tk()
-    chat = Chat(root, client = Client)
-
+    chat = Chat(root, Client)
     root.mainloop()
-
-    print Client.is_running()
-    del (Client)
-    print root
-    del (root)

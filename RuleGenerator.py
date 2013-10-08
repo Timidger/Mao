@@ -5,21 +5,29 @@ Created on Thu Jun 27 00:50:30 2013
 @author: Preston
 """
 
-#The string for wait will split it up if there is a space in between.....
-#SO 'Hello World!' is two seperate values
+#Default values is kinda a fuckery, sorry
+#Have fun buddy! :P
 
-KEYWORD_TO_VARIABLE = {'say': 'phrase', 'play': 'card'}
+import shlex
 
-#I don't like any of this....
+def nothing(*args):
+    print 'Nothing happened!'
+
+
+KEYWORD_TO_VARIABLE = {'say': 'phrase', 'play': 'card',
+                       'player': 'player', 'notify': 'reason',
+                       'punish': 'penalty'}
+
 
 WHITE_LIST = set()
-DEFAULT_VALUES = {'phrase': None, 'card': None, 'args': None, 'timeout': 0}
+DEFAULT_VALUES = {'phrase': None, 'card': None, 'args': None,
+                  'timeout': 0, 'failure_function': 'nothing'}
                     # {Variable name: value}
                     # I.E: {'failure_function': SERVER.punish}
 
 def get_base_code(script_line):
-    """Finds the command in the line of script and returns the corresponding
-    unformatted code"""
+    """Finds the command in the line of script and returns the
+    corresponding unformatted code"""
     base_mapping = {
             'Remove': '\n'.join((
                 'if "{variable}" in WHITE_LIST:',
@@ -30,18 +38,18 @@ def get_base_code(script_line):
             'Set': '\n'.join(('{variable} = {value}',)),
 
             'Replace': '\n'.join((
-                '{variable1}, {variable2} = {variable2}, {variable1}',)),
+                '{variable1}, {variable2} = {variable2}, {variable1}',
+                )),
 
             'Wait': '\n'.join((
-                '{player}, {penalty}, {reason}',
-                #Phrase/Card is None, so that way only one is chosen
+                'rule = {rule}',
                 'if {phrase}:',
-                '    {say_queue}.put(({phrase}, {player}))',
+                '    rule.say_queue.put(({phrase}, {player}))',
                 'if {card}:',
-                '    {play_queue}.put(({card}, {player}))',
-                '{say_queue}.not_empty.wait({timeout}/2.0), (',
-                '{play_queue}.not_empty.wait({timeout}/2.0))'
-                'for queue in (play_queue, say_queue):',
+                '    rule.play_queue.put(({card}, {player}))',
+                'rule.say_queue.not_empty.wait({timeout}/2.0)',
+                'rule.play_queue.not_empty.wait({timeout}/2.0)',
+                'for queue in (rule.play_queue, rule.say_queue):',
                 '    if queue.empty:',
                 '        {failure_function}({player}, {penalty},',
                 '                           reason = {reason})',
@@ -61,15 +69,15 @@ def get_base_code(script_line):
 def format_code(line, **variable_values):
     """Takes an unformatted line of code and formats it with the given
     variable: value pairs. I.E: to set variable in the delete code to
-    player,format_code(get_base_code('Remove'), variable = player_instance).
-    """
+    player,format_code(get_base_code('Remove'), variable =
+    player_instance)."""
     return line.format(**variable_values)
 
 def get_base_variables(base_line):
-    """Returns a set of the variables for the base line from get_base_code.
-    I.E: Returns set(['variable', 'value']) for {variable} = {{{value}: 5}}
-    Note that double braces (which represents normal { and } respectively)
-    are ignored"""
+    """Returns a set of the variables for the base line from
+    get_base_code. I.E: Returns set(['variable', 'value']) for
+    {variable} = {{{value}: 5}} Note that double braces (which
+    represents normal { and } respectively) are ignored"""
     variables = set()
     chunks = base_line.replace('{{', '').replace('}}', '')
     next_part = lambda chunk: chunk[-1].partition('}')
@@ -79,9 +87,10 @@ def get_base_variables(base_line):
     return variables
 
 def add_variable(variable):
-    """Attempts to add the variable, value pair to the whitelist. If that
-    variable is already used in the local name space, returns False. If the
-    dictionary is successfully updated, then return True"""
+    """Attempts to add the variable, value pair to the whitelist. If
+    that variable is already used in the local name space, returns
+    False. If the dictionary is successfully updated, then return True
+    """
     if variable in globals().iterkeys() and variable not in WHITE_LIST:
         return False
     else:
@@ -97,25 +106,24 @@ def get_script_values(script_line):
     #Hexadecimal for space: \x20
     for delimiter in delimiters:
         values = values.replace(delimiter, ' ')
-    return values.split()
+    return shlex.split(values, posix = False)
+    #Otherwise, strings with spaces in them get cut off
 
 def get_keyword_values(values):
-    """Parses a list of values, like the one returned from get_script_values
-    and returns a dictionary representing matching explicit keyword
-    arguments. The found keyword/value pairs are removed from the list.
-    The KEYWORD_TO_VARIABLE dictionary is used to associate the script word
-    to the variable. As an example:
+    """Parses a list of values, like the one returned from
+    get_script_values and returns a dictionary representing matching
+    explicit keyword arguments. The KEYWORD_TO_VARIABLE dictionary is
+    used to associate the script word to the variable. As an example:
 
     SCRIPT:     wait ... for player to say 'Hello World!'
     VALUE LIST: [..., player, say, 'Hello World!']
-    say is a special script word for the 'phrase' variable, so this would
-    return {'phrase': 'Hello World!'}"""
+    say is a special script word for the 'phrase' variable, so this
+    would return {'phrase': 'Hello World!'}"""
     keyword_args = {}
     for value in values:
         if KEYWORD_TO_VARIABLE.get(value):
             keyword_args.update({KEYWORD_TO_VARIABLE.get(value):
                          values.pop(values.index(value) + 1)})
-            values.remove(value)
     return keyword_args
 
 def compile_code(code):
@@ -135,8 +143,8 @@ def codify(rule):
         values = get_script_values(line)[1:]
         base = get_base_code(line)
         if not base:
-            raise SyntaxError, "Couldn't find a command on line {}".format(
-            line_num)
+            raise SyntaxError, (
+            "Couldn't find a command on line {}".format(line_num))
         variables = get_base_variables(base)
         for value in values:
             if not add_variable(value):
@@ -145,26 +153,26 @@ def codify(rule):
                 "{} cannot be used, choose a different variable".format(
                 value)))
         args = DEFAULT_VALUES.copy()
-        args.update({'say_queue': rule.say_queue,
-                     'play_queue': rule.play_queue})
         args.update(dict(zip(variables, values)))
+        args.update(get_keyword_values(values))
+        args.update({'say_queue': 'rule.say_queue',
+                     'play_queue': 'rule.play_queue'})
         assert len(variables) <= len(args),(" ".join((
             "On line {},".format(line_num),
             "received {} parametres, but need {}\n".format(
             len(args), len(variables)),
             "Given: {}\n".format(args.keys()),
-            "Need:  {}\n".format(list(variables)),
-            "They should be equal in size",)))
+            "Still Need:  {}\n".format(list(set(variables).difference(
+                                       set(args.keys())))))))
         indent = 0
         for letter in line:
             if letter.isspace():
                 indent += 1
             else:
                 break
-        base = base.replace('\n', '\n' + ' ' * indent)#Indents all but first
+        base = base.replace('\n', '\n' + ' ' * indent)
         code += ' ' * indent + (
         format_code(base, **args) + '\n')
-    #print code
     return compile_code(code)
 
 if __name__ == '__main__':
@@ -199,7 +207,9 @@ if __name__ == '__main__':
             else:
                 break
         if script:
-            return codify('\n'.join(script))
+            return codify(Rule.Rule('CLI script', None,
+                          '\n'.join(script)))
         else:
             return '""'
-    print eval(interpreter())
+    eval(interpreter())
+    print "Compiled and executed!"
