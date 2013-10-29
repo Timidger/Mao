@@ -5,14 +5,7 @@ Created on Thu Jun 27 00:50:30 2013
 @author: Preston
 """
 
-#Default values is kinda a fuckery, sorry
-#Have fun buddy! :P
-
 import shlex
-
-def nothing(*args):
-    print 'Nothing happened!'
-
 
 KEYWORD_TO_VARIABLE = {'say': 'phrase', 'play': 'card',
                        'player': 'player', 'notify': 'reason',
@@ -21,9 +14,9 @@ KEYWORD_TO_VARIABLE = {'say': 'phrase', 'play': 'card',
 
 WHITE_LIST = set()
 DEFAULT_VALUES = {'phrase': None, 'card': None, 'args': None,
-                  'timeout': 0, 'failure_function': 'nothing'}
+                  'timeout': 0}
                     # {Variable name: value}
-                    # I.E: {'failure_function': SERVER.punish}
+                    # I.E: {'failure_function': 'SERVER.punish'}
 
 def get_base_code(script_line):
     """Finds the command in the line of script and returns the
@@ -172,7 +165,7 @@ def codify(rule):
                 break
         base = base.replace('\n', '\n' + ' ' * indent)
         code += ' ' * indent + (
-        format_code(base, **args) + '\n')
+            format_code(base, **args) + '\n')
     return compile_code(code)
 
 if __name__ == '__main__':
