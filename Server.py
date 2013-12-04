@@ -209,14 +209,12 @@ class Server(object):
         until the event is set. If no event is given, uses the main_event
         (the one that is set when the current player finally plays a card)"""
         while player in self.player_handler.players:
-            punish_thread = threading.Timer(interval = punish_timer,
-                                            function = self.punish,
-                                            args = [player, penalty_num])
-            punish_thread.start()
             if event.wait(punish_timer):
                 punish_thread.cancel()
                 event.clear()
-                return True
+                break
+            else:
+                self.punish(player, penalty_num)
 
     def update_deck(self):
         "Checks if the deck is getting low (<= 26), and adds card if it is"
