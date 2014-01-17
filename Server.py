@@ -86,10 +86,11 @@ class Server(object):
                                config_parser.getint('Cards', 'hand_size')))
 
     @staticmethod
-    def send(data, client, timeout = None):
+    def send(data, client):
         "Send some data (pickled) to the client"
         pickled = pickle.dumps(data) +  ';'
         client.send(str(len(pickled)) + ':')
+        
         total = 0
         while total < len(pickled):
             sent = client.send(pickled[total:])
@@ -102,34 +103,38 @@ class Server(object):
         for client in self.clients:
             Server.send(data, client)
 
-    def receive(self, client, timeout = 10, message = None):
+    def receive(self, client, timeout = 10):
         """Get a response from the server and de-pickles it. If the actual
         message takes too long (longer than 10 seconds or timeout if given)
         then socket.error is raised"""
-        if not message:
-            received = client.recv(2048).split(':', 1)
-        else:
-            received = message.split(':', 1)
-        length = received[0]
-        if not length:
-            raise socket.error
-        data = received[1]
-        client.settimeout(timeout)
-        while len(data) < int(length):
-            message = client.recv(2048)
+        def get_message(client, timeout, message = None):
             if not message:
+                received = client.recv(2048).split(':', 1)
+            else:
+                received = message.split(':', 1)
+            length = received[0]
+            if not length:
                 raise socket.error
-            data += message
-        client.settimeout(None)
-        first, second = data.rsplit(';', 1)
-        first = pickle.loads(first)
-        if first == '':
-            raise socket.error('The Client closed the connection!')
-        data = []
-        data.append(first)
-        if second:
-            data.extend(self.receive(client, timeout = 10, message = second))
-        return data
+            data = received[1]
+            client.settimeout(timeout)
+            while len(data) < int(length):
+                message = client.recv(2048)
+                if not message:
+                    raise socket.error
+                data += message
+            client.settimeout(None)
+            first, second = data.rsplit(';', 1)
+            first = pickle.loads(first)
+            if first == '':
+                raise socket.error('The Client closed the connection!')
+            data = []
+            data.append(first)
+            if second:
+                print "Message was too long!"
+                data.extend(get_message(client, timeout = 10, 
+                                         message = second))
+            return data
+        return get_message(client, timeout)
 
     def constantly_receive(self, client, queue):
         """Constantly receives messages from the client and passes it into
@@ -208,13 +213,10 @@ class Server(object):
         """Constantly punishes the player the number of cards in penalty_num
         until the event is set. If no event is given, uses the main_event
         (the one that is set when the current player finally plays a card)"""
-        while player in self.player_handler.players:
-            if event.wait(punish_timer):
-                punish_thread.cancel()
-                event.clear()
-                break
-            else:
-                self.punish(player, penalty_num)
+        while (not event.wait(punish_timer) and
+        player in self.player_handler.players):
+            self.punish(player, penalty_num)
+        event.clear()
 
     def update_deck(self):
         "Checks if the deck is getting low (<= 26), and adds card if it is"
@@ -273,76 +275,80 @@ class Server(object):
                 if not self.is_running():
                     #else it'd sent to a broken socket
                     break
-                for code in self.rule_handler.check_rules(data,
-                                                          config_parser.get(
-                                                          'Rules',
-                                                          'allow_no_trigger'
-                                                          )):
+                for code in (
+                self.rule_handler.check_rules(data, config_parser.get(
+                'Rules','allow_no_trigger'))):
                     threading.Thread(name = 'A Rule thread',
                                      target = lambda: code).start()
-                if type(data) == str:
-                    self.send_all('{player}: {message}'.format(
-                    player = player.name, message = data))
-                    print '{player}: {message}'.format(
-                    player = player.name, message = data)
-                    self.rule_handler.said(data, player,
-                                 PH.get_player_distance(player))
-                elif player == self.player_handler.current_player and (
-                type(data) == Card):
-                    card_index = player.get_card_index(data)
-                    if card_index is not None:#Card index could be 0
-                        print '{player} attempted to play {card}'.format(
-                                player = player.name,
-                                card = data.rank + ' of ' + data.suit)
-                        card = player.get_card(card_index)
-                        if any((card.suit == self.pile.top_card.suit,
-                        card.rank == self.pile.top_card.rank,
-                        not self.pile.top_card.suit,
-                        not self.pile.top_card.rank)):
-                            print ('{card} is now the top card'.format(
-                            card = card.rank + ' of ' + card.suit))
-                            self._main_event.set()
-                            self.pile.add((card,))
-                            self.send_all(card)
-                            self.rule_handler.played(card, player,
-                                           PH.get_player_distance(
-                                           player))
-                        else:
-                            print (
-                            '{card} was given back to {player}'.format(
-                            player = player.name, card = card.rank + (
-                            ' of ' + card.suit)))
-                            assert type(data) == Card
-                            if not data.rank and not data.suit:
-                                data = None
-                            else:
-                                data = (data,)
-                            self.punish(player, cards = data, reason = (
-                            "for not playing a valid card"))
-                    elif not data.rank and not data.suit:
-                        self._main_event.set()
-                        self.punish(player)#They draw a card
-                    else:
-                        self._main_event.set()
-                        self.send_all(
-                        '{} was caught with a fake card!'.format(
-                        player.name))
-                        print '{} was caught with a fake card!'.format(
-                        player.name)
-                        raise socket.error
-
+                self.handle_data(data, player)
+        except (socket.error, socket.timeout):
+            if self.is_running() and client in self.clients:
+                self.disconnect(client)
+            return
+            
+    def handle_data(self, data, player):
+        """Using data as in the player input and the current game conditions,
+        this function responds to the player's action, usually by sending
+        either a card or a message"""
+        if type(data) == str:
+            self.send_all('{player}: {message}'.format(
+            player = player.name, message = data))
+            print '{player}: {message}'.format(
+            player = player.name, message = data)
+            self.rule_handler.said(data, player,
+                         PH.get_player_distance(player))
+        elif player == self.player_handler.current_player and (
+        type(data) == Card):
+            card_index = player.get_card_index(data)
+            if card_index is not None:#Card index could be 0
+                print '{player} attempted to play {card}'.format(
+                        player = player.name,
+                        card = data.rank + ' of ' + data.suit)
+                card = player.get_card(card_index)
+                if any((card.suit == self.pile.top_card.suit,
+                card.rank == self.pile.top_card.rank,
+                not self.pile.top_card.suit,
+                not self.pile.top_card.rank)):
+                    print ('{card} is now the top card'.format(
+                    card = card.rank + ' of ' + card.suit))
+                    self._main_event.set()
+                    self.pile.add((card,))
+                    self.send_all(card)
+                    self.rule_handler.played(card, player,
+                                   PH.get_player_distance(
+                                   player))
                 else:
+                    print (
+                    '{card} was given back to {player}'.format(
+                    player = player.name, card = card.rank + (
+                    ' of ' + card.suit)))
                     assert type(data) == Card
                     if not data.rank and not data.suit:
                         data = None
                     else:
                         data = (data,)
                     self.punish(player, cards = data, reason = (
-                    'for playing out of turn!'))
-        except (socket.error, socket.timeout):
-            if self.is_running() and client in self.clients:
-                self.disconnect(client)
-            return
+                    "for not playing a valid card"))
+            elif not data.rank and not data.suit:
+                self._main_event.set()
+                self.punish(player)#They draw a card
+            else:
+                self._main_event.set()
+                self.send_all(
+                '{} was caught with a fake card!'.format(
+                player.name))
+                print '{} was caught with a fake card!'.format(
+                player.name)
+                raise socket.error
+
+        else:
+            assert type(data) == Card
+            if not data.rank and not data.suit:
+                data = None
+            else:
+                data = (data,)
+            self.punish(player, cards = data, reason = (
+            'for playing out of turn!'))
 
 if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
