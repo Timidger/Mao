@@ -8,7 +8,7 @@ import os
 from ConfigParser import ConfigParser
 
 config_parser = ConfigParser(allow_no_value = True)
-options_file = 'options.ini'
+options_file = 'options.cfg'
 if not config_parser.read(options_file):
     raise IOError, 'Could not locate {} in {}'.format(options_file,
                                                       os.getcwd())
