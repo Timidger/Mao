@@ -361,6 +361,7 @@ if __name__ == '__main__':
     port = config_parser.getint('Misc.', 'port')
     players = PH.players
     server = Server(RH, PH, port, ip)
+    clients = server.clients
 
     for variable in ('RH', 'PH', 'server.deck', 'server.pile'):
         RuleGenerator.WHITE_LIST.add(variable)
