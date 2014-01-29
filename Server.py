@@ -228,9 +228,8 @@ class Server(object):
             if option.endswith('suit'))):
                 suits.extend(suit)
             ranks = config_parser.get('Cards', 'ranks').split()
-            new_deck = (Pile.Pile([Card(suit, rank) for rank in \
-            ranks for suit in suits]))
-            self.deck.add(new_deck.cards)
+            self.deck.add([Card(suit, rank) for rank in (
+                          ranks for suit in suits)])
             self.deck.shuffle()
             self.deck.update_top_card()
 
