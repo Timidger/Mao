@@ -18,24 +18,24 @@ class RuleHandler(object):
             for rule in tuple(rules):
                 self.add_rule(rule)
 
-    def check_rules(self, check, check_none = False):
+    def check_rules(self, trigger, check_none = False):
         """Using the trigger as a key, returns a list of the rule scripts
         that pass the check; if check_None is given and True, triggers that
         are None also get counted"""
         rule_scripts = []
-        if type(check) == Card:
-            check = check.rank, check.suit
+        if type(trigger) == Card:
+            trigger = trigger.rank, trigger.suit
         for rule in self.rules:
             if not rule.triggers and check_none:
                 rule_scripts.append(self.rules.get(rule))
             else:
                 for trigger in rule.triggers:
-                    if type(trigger) == Card and type(check) == Card:
-                        if all((trigger.rank == check.rank,
-                        trigger.suit == check.suit)):
+                    if type(trigger) == Card and type(trigger) == Card:
+                        if all((trigger.rank == trigger.rank,
+                        trigger.suit == trigger.suit)):
                             rule_scripts.append(self.rules.get(rule))
-                    elif type(trigger) == str and type(check) == str:
-                        if trigger == check or not trigger and check_none:
+                    elif type(trigger) == str and type(trigger) == str:
+                        if trigger == trigger or not trigger and check_none:
                             rule_scripts.append(self.rules.get(rule))
         return rule_scripts
 
