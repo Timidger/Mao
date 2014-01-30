@@ -358,6 +358,8 @@ if __name__ == '__main__':
     players = PH.players
     server = Server(RH, PH, port, ip)
     clients = server.clients
+    deck = server.deck
+    pile = server.pile
 
     for variable in ('RH', 'PH', 'server.deck', 'server.pile'):
         RuleGenerator.WHITE_LIST.add(variable)
