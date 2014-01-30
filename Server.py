@@ -280,7 +280,8 @@ class Server(object):
                 self.rule_handler.check_rules(data, config_parser.get(
                 'Rules','allow_no_trigger'))):
                     threading.Thread(name = 'A Rule thread',
-                                     target = lambda: code).start()
+                                     target = code
+                                     args = (self,)).start()
                 self.handle_data(data, player)
         except (socket.error, socket.timeout):
             if self.is_running() and client in self.clients:
