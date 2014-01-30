@@ -39,26 +39,6 @@ class RuleHandler(object):
                             rule_scripts.append(self.rules.get(rule))
         return rule_scripts
 
-    def said(self, phrase, player, player_index):
-        """Any rule blocking execution until a card is played is unblocked
-        if and only if the card and player/player_index are being waited on
-        """
-        for rule in self.rules:
-            if (phrase, player) in rule.play_queue.queue:
-                rule.play_queue.queue.remove(phrase, player)
-            elif (phrase, player_index) in rule.say_queue.queue:
-                rule.play_queue.queue.remove(phrase, player_index)
-
-    def played(self, card, player, player_index):
-        """Any rule blocking execution until a card is played is unblocked
-        if and only if the card and player/player_index are being waited on
-        """
-        for rule in self.rules:
-            if (card, player) in rule.say_queue.queue:
-                rule.say_queue.queue.remove(card, player)
-            elif (card, player_index) in rule.say_queue.queue:
-                rule.say_queue.queue.remove(card, player_index)
-
     def add_rule(self, rule):
         """If the rule is not in the rules, adds it to the rules. If the
         rulewas added, returns True. Else, returns False"""

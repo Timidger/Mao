@@ -295,8 +295,6 @@ class Server(object):
             player = player.name, message = data))
             print '{player}: {message}'.format(
             player = player.name, message = data)
-            self.rule_handler.said(data, player,
-                         PH.get_player_distance(player))
         elif player == self.player_handler.current_player and (
         type(data) == Card):
             card_index = player.get_card_index(data)
@@ -314,9 +312,6 @@ class Server(object):
                     self._main_event.set()
                     self.pile.add((card,))
                     self.send_all(card)
-                    self.rule_handler.played(card, player,
-                                   PH.get_player_distance(
-                                   player))
                 else:
                     print (
                     '{card} was given back to {player}'.format(

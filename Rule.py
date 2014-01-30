@@ -32,8 +32,6 @@ class Rule(object):
         else:
             self.triggers = ()
         self.script = script
-        self.play_queue = Queue()
-        self.say_queue = Queue()
 
 if __name__ == '__main__':
-    
+    pass
