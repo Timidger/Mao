@@ -4,7 +4,7 @@ Created on Fri Dec 28 13:12:58 2012
 
 @author: Preston
 """
-import Player, Pile, socket, threading, pickle
+import Player, Pile, socket, threading, pickle, sys
 import time, random, Queue
 from OptionsParser import config_parser
 from Card import Card
@@ -46,9 +46,10 @@ class Server(object):
                 client.send('Connection Established')
                 print 'Connection Established with {}'.format(
                 ':'.join((address[0], str(address[1]))))
-                if client not in self.clients and (
-                config_parser.getint('Players', 'max_players') > len(
-                self.clients)):
+
+                if client not in self.clients (
+                and config_parser.getint('Players', 'max_players')
+                or sys.maxint) > len(self.clients)):
                     player = self.authorise_player(client)
                     self.clients.update({client: player})
                     self.player_handler.add_player(player)
