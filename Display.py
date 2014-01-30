@@ -39,7 +39,7 @@ class Display(Tkinter.Frame, object):
 
     def start_screen(self):
         self.start_frame = Tkinter.Frame(self.master)
-        self.ip_box = Tkinter.Entry(self.start_frame)
+        self.ip_box = Tkinter.Entry(self.start_frame, text="hey")
         self.port_box = Tkinter.Entry(self.start_frame)
         self.name_box = Tkinter.Entry(self.start_frame)
         start_button = Tkinter.Button(self.start_frame)
@@ -52,7 +52,10 @@ class Display(Tkinter.Frame, object):
         start_button.grid()
 
     def destroy(self):
-        self.client.disconnect()
+        try:
+            self.client.disconnect()
+        except AttributeError:
+            pass
         super(Display, self).destroy()
 
 if __name__ == '__main__':
