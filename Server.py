@@ -280,13 +280,16 @@ class Server(object):
                 self.rule_handler.check_rules(data, config_parser.get(
                 'Rules','allow_no_trigger'))):
                     threading.Thread(name = 'A Rule thread',
-                                     target = code
+                                     target = code,
                                      args = (self,)).start()
                 self.handle_data(data, player)
-        except (socket.error, socket.timeout):
+        except (socket.error):
+            print "Socket error while listening to {}".format(player)
+        except (socket.timeout):
+            print "Timed out while listening for {}".format(player)
+        finally:
             if self.is_running() and client in self.clients:
                 self.disconnect(client)
-            return
 
     def handle_data(self, data, player):
         """Using data as in the player input and the current game conditions,
