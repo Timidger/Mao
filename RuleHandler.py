@@ -4,8 +4,9 @@ Created on Fri Dec 28 13:14:57 2012
 
 @author: Preston
 """
-
+import os
 from Card import Card
+import Variants
 
 class RuleHandler(object):
     """Holds rules to be executed from input corresponding to triggers."""
@@ -49,3 +50,8 @@ class RuleHandler(object):
     def remove_rule(self, rule):
         """Removes the rule from the list of rules."""
         self.rules.pop(rule)
+
+    @staticmethod
+    def list_custom_modules():
+        """Lists the custom modules available in the variants directory"""
+        
