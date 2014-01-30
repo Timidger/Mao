@@ -90,7 +90,7 @@ class Server(object):
         "Send some data (pickled) to the client"
         pickled = pickle.dumps(data) +  ';'
         client.send(str(len(pickled)) + ':')
-        
+
         total = 0
         while total < len(pickled):
             sent = client.send(pickled[total:])
@@ -131,7 +131,7 @@ class Server(object):
             data.append(first)
             if second:
                 print "Message was too long!"
-                data.extend(get_message(client, timeout = 10, 
+                data.extend(get_message(client, timeout = 10,
                                          message = second))
             return data
         return get_message(client, timeout)
@@ -284,7 +284,7 @@ class Server(object):
             if self.is_running() and client in self.clients:
                 self.disconnect(client)
             return
-            
+
     def handle_data(self, data, player):
         """Using data as in the player input and the current game conditions,
         this function responds to the player's action, usually by sending
@@ -373,6 +373,3 @@ if __name__ == '__main__':
         exit()
 
     print "Type 'shutdown()' to shutdown the server; DON'T exit the prompt"
-    print
-    print [var for var in vars(server).keys() if not var.startswith('_')]
-    print "I don't think we need clients in here....:P"
