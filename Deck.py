@@ -24,6 +24,9 @@ class Deck(Tkinter.Frame, object):
         self.Client.disconnect()
         super(Deck, self).destroy()
 
+    def __repr__(self):
+        return "GUI representation of {}".format(self.Client.deck)
+
 if __name__ == '__main__':
     from Client import Client
     ip = raw_input('ip (nothing for localname) = ')

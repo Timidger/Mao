@@ -44,3 +44,6 @@ class Pile(object):
         if not index:
             self.update_top_card()
         return cards
+
+    def __repr__(self):
+        return "Pile with these three cards on top: {}".format(self.cards[0:3])

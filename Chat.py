@@ -71,6 +71,10 @@ class Chat(Tkinter.Frame, object):
             except Queue.Empty:
                 continue
 
+    def __repr__(self):
+        return "GUI representation of chat, with {} in the chat buffer".format(
+        self.message_box.get())
+
 if __name__ == '__main__':
     ip = raw_input('ip (Nothing for localhost): ')
     port = int(raw_input('port: '))

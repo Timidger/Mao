@@ -33,5 +33,9 @@ class Rule(object):
             self.triggers = ()
         self.script = script
 
+    def __repr__(self):
+        return "Rule {}, which uses {} for rule logic".format(
+        self.name, self.script)
+
 if __name__ == '__main__':
     pass

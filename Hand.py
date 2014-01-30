@@ -81,6 +81,10 @@ class Hand(Tkinter.Frame, object):
         self.Client.disconnect()
         super(Hand, self).destroy()
 
+    def __repr__(self):
+        return "GUI representation of the hand for {}".format(
+        self.Client.player)
+
 if __name__ == '__main__':
     from Pile import Pile
     suits = []

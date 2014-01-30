@@ -46,6 +46,9 @@ class Stack(Tkinter.Frame, object):
         self.Client.disconnect()
         super(Stack, self).destroy()
 
+    def __repr__(self):
+        return "GUI representation of {}".format(self.Client.pile)
+
 if __name__ == '__main__':
     root = Tkinter.Tk()
     ip = raw_input('ip (nothing for localname) = ')

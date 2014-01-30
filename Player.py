@@ -35,3 +35,6 @@ class Player(object):
     def add_card(self, card, index = 0):
         "Add the card to the player's hand at the index (defaults to 0)"
         self.hand.insert(index, card)
+
+    def __repr__(self):
+        return "Player {} with {} cards".format(self.name, len(self.hand))
