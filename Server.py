@@ -47,9 +47,9 @@ class Server(object):
                 print 'Connection Established with {}'.format(
                 ':'.join((address[0], str(address[1]))))
 
-                if client not in self.clients (
-                and config_parser.getint('Players', 'max_players')
-                or sys.maxint) > len(self.clients)):
+                if client not in self.clients and (
+                config_parser.getint('Players', 'max_players')
+                or sys.maxint) > len(self.clients):
                     player = self.authorise_player(client)
                     self.clients.update({client: player})
                     self.player_handler.add_player(player)
