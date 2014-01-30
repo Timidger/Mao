@@ -352,7 +352,7 @@ class Server(object):
 
 if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
-    from RuleHandler import RuleHandler, RuleGenerator
+    from RuleHandler import RuleHandler
     from Rule import Rule
     rules = [Rule('Test Rule', None, 'Set a to exit()')]
     RH = RuleHandler(rules)
@@ -365,8 +365,6 @@ if __name__ == '__main__':
     deck = server.deck
     pile = server.pile
 
-    for variable in ('RH', 'PH', 'server.deck', 'server.pile'):
-        RuleGenerator.WHITE_LIST.add(variable)
     print 'Server at {}:{}'.format(ip or 'localhost', port)
     MAIN_THREAD = threading.Thread(target = server.main_loop)
     print "Type 'MAIN_THREAD.start()' to start the game!"
