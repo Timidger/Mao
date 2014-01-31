@@ -64,7 +64,7 @@ class Hand(Tkinter.Frame, object):
         while self.Client.is_running():
             try:
                 self.add_to_hand(self.Client.card_queue.get(timeout = 1))
-                self.Client.card_queue.queue))
+                self.Client.card_queue.queue
                 self.update_hand()
             except Queue.Empty:#So this thread stops when the client stops
                 continue

@@ -60,5 +60,6 @@ class Display(Tkinter.Frame, object):
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
+    root.wm_title("Mao: Version 1.0")
     main = Display(root)
     root.mainloop()
