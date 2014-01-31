@@ -72,7 +72,6 @@ class Client(object):
         data = []
         data.append(first)
         if second:
-            print "Message was too long, split it up badly"
             data.extend(self.receive(timeout = 10, message = second))
         return data
 
@@ -114,15 +113,12 @@ class Client(object):
                     continue
                 if type(data) == Card:
                     card = data
-                    print 'Added {}'.format(data.rank + data.suit)
                     self.pile.add((card,))
                     self.pile.update_top_card()
                     self.pile_queue.put(card)
                 elif type(data) == tuple:
                     if all((type(card) == Card for card in data)):
-                        print 'Adding this many cards: ' + str(len(data))
                         for card in data:
-                            print 'added 1!'
                             self.player.add_card(card)
                             self.card_queue.put(card)
                     elif all((type(player) == str for player in data)):
