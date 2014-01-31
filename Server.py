@@ -354,7 +354,10 @@ if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
     from RuleHandler import RuleHandler
     from Rule import Rule
-    rules = [Rule('Test Rule', None, 'Set a to exit()')]
+    def test_rule(server_object):
+        global a
+        a = exit
+    rules = [Rule('Test Rule', None, test_rule)]
     RH = RuleHandler(rules)
     PH = PlayerHandler([])
     ip = config_parser.get('Misc.', 'ip')
