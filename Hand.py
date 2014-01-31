@@ -45,8 +45,6 @@ class Hand(Tkinter.Frame, object):
                       text = card.rank + ' of ' + card.suit)
         self.cards.update({card: button})
         self._send_lock.release()
-        print 'Added {} to hand!'.format(card.rank + ' of ' + card.suit)
-        print 'Length of hand: ' + str(len(self.Client.player.hand))
 
     def update_hand(self):
         for index, button in enumerate(self.cards.values()):
@@ -61,19 +59,13 @@ class Hand(Tkinter.Frame, object):
         self._send_lock.acquire()
         self.Client.send(card)
         self._send_lock.release()
-        print 'Sent: {}!'.format(card.rank + ' of ' + card.suit)
 
     def listen(self):
         while self.Client.is_running():
             try:
-                print 'Current size of the HAND: {}'.format(len(self.cards))
                 self.add_to_hand(self.Client.card_queue.get(timeout = 1))
-                print 'I got a card! (I think?)'
-                print 'Current Size of Queue: ' + str(len(
                 self.Client.card_queue.queue))
                 self.update_hand()
-                print 'Just called update_hand'
-                print 'So, it was just drawn..'
             except Queue.Empty:#So this thread stops when the client stops
                 continue
 

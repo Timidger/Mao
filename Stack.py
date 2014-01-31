@@ -21,7 +21,6 @@ class Stack(Tkinter.Frame, object):
         self.listener.start()
 
     def create_widgets(self):
-        print Client
         self.top_card = Tkinter.Button(self,
                                        relief = 'flat',
                                        text = (
