@@ -83,6 +83,7 @@ class Server(object):
             raise socket.error
         print player_name + ' Joined!'
         self.send_all('[{} Joined!]'.format(player_name))
+        self.update_deck()
         return Player.Player(player_name, hand = self.deck.remove(0,
                                config_parser.getint('Cards', 'hand_size')))
 
