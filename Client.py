@@ -131,6 +131,12 @@ class Client(object):
                     self.message_queue.put(data)
         except (socket.error, socket.timeout):
             self.disconnect()
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        self.disconnect()
 
 if __name__ == '__main__':
     ip = raw_input('ip (nothing for localname) = ')

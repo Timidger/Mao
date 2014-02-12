@@ -346,6 +346,12 @@ class Server(object):
                 data = (data,)
             self.punish(player, cards = data, reason = (
             'for playing out of turn!'))
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        self.shutdown()
 
 if __name__ == '__main__':
     from PlayerHandler import PlayerHandler
