@@ -224,12 +224,8 @@ class Server(object):
         "Checks if the deck is getting low (<= 26), and adds card if it is"
         if len(self.deck.cards) <= 26:
             suits = []
-            for suit in (
-            config_parser.get('Cards', suit_type).split() for suit_type in (
-            option for option in config_parser.options('Cards') \
-            if option.endswith('suit'))):
-                suits.extend(suit)
-            ranks = config_parser.get('Cards', 'ranks').split()
+            suits = "Spades Hearts Diamonds Clubs".split()
+            ranks = "Ace 2 3 4 5 6 7 8 9 10 King Queen".split()
             new_deck = (Pile.Pile([Card(suit, rank) for rank in \
             ranks for suit in suits]))
             self.deck.add(new_deck.cards)
