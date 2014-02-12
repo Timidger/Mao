@@ -12,4 +12,5 @@
         self.rank = new_rank
 
     def __repr__(self):
-        return "Card with suit = {} and rank = {}".format(self.suit, self.rank)
+        return "A Card with suit = {} and rank = {}".format(
+        self.suit, self.rank)

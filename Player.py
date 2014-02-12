@@ -37,4 +37,4 @@ class Player(object):
         self.hand.insert(index, card)
 
     def __repr__(self):
-        return "Player {} with {} cards".format(self.name, len(self.hand))
+        return "Player named {} with {} cards".format(self.name, len(self.hand))

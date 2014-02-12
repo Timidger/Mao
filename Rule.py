@@ -17,7 +17,7 @@ class Rule(object):
     def __init__(self, name, triggers, script):
         """
         name -- a simple name to easily identify a rule
-        
+
         trigger -- card or phrase that invokes the rule
 
         commands -- executable python code. Either a lambda, function, compiled
@@ -34,8 +34,9 @@ class Rule(object):
         self.script = script
 
     def __repr__(self):
-        return "Rule {}, which uses {} for rule logic".format(
-        self.name, self.script)
+        return ("Rule named {},"
+                "which uses the function '{}' for rule logic").format(
+                 self.name, self.script.__name__)
 
 if __name__ == '__main__':
     pass

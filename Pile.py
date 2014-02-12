@@ -46,4 +46,5 @@ class Pile(object):
         return cards
 
     def __repr__(self):
-        return "Pile with these three cards on top: {}".format(self.cards[0:3])
+        return "A Pile with these three cards on top: {}".format(
+        self.cards[0:3])
