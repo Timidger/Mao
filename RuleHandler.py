@@ -51,8 +51,3 @@ class RuleHandler(object):
     def remove_rule(self, rule):
         """Removes the rule from the list of rules."""
         self.rules.pop(rule)
-
-    @staticmethod
-    def list_custom_modules():
-        """Lists the custom modules available in the variants directory"""
-        
