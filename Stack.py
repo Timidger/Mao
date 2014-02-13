@@ -5,11 +5,11 @@ Created on Fri Aug  9 12:59:49 2013
 @author: timidger
 """
 
-
-#Good enought, still need to add multiple cards for the pile
-
-import Tkinter, Queue, threading
+import Tkinter
+import Queue
+import threading
 from Client import Client
+
 
 class Stack(Tkinter.Frame, object):
     def __init__(self, master, Client):

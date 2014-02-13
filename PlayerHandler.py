@@ -40,7 +40,7 @@ class PlayerHandler(object):
     def update_order(self):
         """If order is configured to be unfair (i.e: not every player will
         play in a given round), then the order reverts to one"""
-        if not self.order or (#If removed by rule
+        if not self.order or (
         len(self.players) % 2 == 0 and self.order % 2 == 0) or (
         len(self.players) % 2 != 0 and self.order % 2 != 0):
             self.order = 1

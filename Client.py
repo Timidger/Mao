@@ -4,7 +4,10 @@ Created on Mon Apr 22 21:54:20 2013
 
 @author: preston
 """
-import socket, pickle, threading, Queue
+import socket
+import pickle
+import threading
+import Queue
 from Card import Card
 from Pile import Pile
 from Player import Player

@@ -5,8 +5,11 @@ Created on Fri Dec 28 13:12:58 2012
 @author: Preston
 """
 from Client import Client
-import Tkinter, threading, Queue
+import Tkinter
+import threading
+import Queue
 from idlelib.WidgetRedirector import WidgetRedirector
+
 
 #This class is totally not mine, and is from the unpythonic tkinter wiki
 class ReadOnlyText(Tkinter.Text):
@@ -20,6 +23,7 @@ class ReadOnlyText(Tkinter.Text):
                                   "insert", lambda *args, **kw: "break")
         self.delete = self.redirector.register(
                                   "delete", lambda *args, **kw: "break")
+
 
 class Chat(Tkinter.Frame, object):
     """Sets up a non-editable window where received text is displayed

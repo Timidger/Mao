@@ -7,6 +7,7 @@ Created on Sun Sep 15 23:01:34 2013
 import Tkinter
 from Card import Card
 
+
 class Deck(Tkinter.Frame, object):
     def __init__(self, master, Client):
         super(Deck, self).__init__(master)

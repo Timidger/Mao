@@ -6,6 +6,7 @@ Created on Fri Dec 28 13:15:23 2012
 """
 import Rule
 
+
 class Variant(object):
     """A collection of Rules to be saved and loaded, into RuleHandler"""
     def __init__(self, name, description, rules):

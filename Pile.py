@@ -7,6 +7,7 @@ Created on Fri Dec 28 13:12:58 2012
 import random
 from Card import Card
 
+
 class Pile(object):
     """Creates a place for cards to be placed"""
     def __init__(self, cards = None):

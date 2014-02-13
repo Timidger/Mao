@@ -7,6 +7,7 @@ Created on Fri Dec 28 13:14:26 2012
 
 from Queue import Queue
 
+
 class Rule(object):
     """Creates a new rule object which, has a name (for identification),
     triggers (to indicate when the script will execute), and a script,

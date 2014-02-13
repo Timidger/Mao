@@ -13,6 +13,7 @@ from Stack import Stack
 from Hand import Hand
 from Chat import Chat
 
+
 class Display(Tkinter.Frame, object):
     def __init__(self, master):
         super(Display, self).__init__(master)
@@ -48,16 +49,11 @@ class Display(Tkinter.Frame, object):
         self.hand.grid(column = 1, row = 0)
         self.chat.grid(column = 1, row = 1)
 
-    def wait_to_destroy(self):
-        #Looks kinda weird, but it destroys GUI when client disconnects
-        if self.client._connected.wait():
-            print "destroying"
-            self.destroy()
-
     def destroy(self):
         try:
             self.client.disconnect()
         #In case the window is closed before joining a server
+        #This will be removed when the login info is modularlised
         except AttributeError:
             pass
         super(Display, self).destroy()

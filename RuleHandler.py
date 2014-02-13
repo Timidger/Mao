@@ -8,6 +8,7 @@ import os
 from Card import Card
 import Variants
 
+
 class RuleHandler(object):
     """Holds rules to be executed from input corresponding to triggers."""
     def __init__(self, rules = None):

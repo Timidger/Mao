@@ -1,4 +1,11 @@
-﻿class Card(object):
+﻿# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 28 13:12:58 2012
+
+@author: Preston
+"""
+
+class Card(object):
     """A card is made up of a suit, rank, and is represented in the game by a
     texture."""
     def __init__(self, suit, rank):

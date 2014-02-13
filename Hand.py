@@ -5,7 +5,9 @@ Created on Fri Aug  9 09:13:12 2013
 @author: timidger
 """
 
-import Tkinter, Queue, threading
+import Tkinter
+import Queue 
+import threading
 from Card import Card
 from Client import Client
 from OptionsParser import config_parser
@@ -63,7 +65,7 @@ class Hand(Tkinter.Frame, object):
                 self.add_to_hand(self.Client.card_queue.get(timeout = 1))
                 self.Client.card_queue.queue
                 self.update_hand()
-            except Queue.Empty:#So this thread stops when the client stops
+            except Queue.Empty:
                 continue
 
     def destroy(self):

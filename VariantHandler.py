@@ -4,8 +4,10 @@ Created on Fri Dec 28 13:15:40 2012
 
 @author: Preston
 """
-import json, os
+import json
+import os
 from Variant import Variant
+
 
 class VariantHandler(object):
     """Handles the variant saving/loading"""

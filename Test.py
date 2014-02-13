@@ -16,6 +16,7 @@ from PlayerHandler import PlayerHandler
 from RuleHandler import RuleHandler
 PH, VH, RH = PlayerHandler(), VariantHandler(), RuleHandler(None)
 
+
 def server_test():
     print "Sorry! I'm too lazy to open the server and client in seperate",
     print " proccesses, so just go run the seperate modules!"
