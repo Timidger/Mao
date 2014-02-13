@@ -197,8 +197,11 @@ class Server(object):
 
     def punish(self, player, penalty_num = config_parser.getint(
                'Punishment','penalty_num'), reason = None, cards = None):
-        """The player is punished by being given penalty_num of cards.
-        Raises a KeyError if the player is not in the list of players.
+        """The player is punished by being given penalty_num of cards. The
+        player can either be relative (a number) or absolute (player object).
+        Raises a KeyError if the player (object) is not in the list of players.
+        When the number is relative, it moves that many places in the list of
+        players; if it goes over it loops back from the beginning.
         If cards is given, then it appends that to the cards. This option is
         available so that cards are sent as one batch, so as to fix hand syncing
         issues when sending back cards for playing out of turn while at the same
@@ -212,6 +215,8 @@ class Server(object):
                     random.choice(player.hand).rank + ' of ' + (
                     random.choice(player.hand).suit)))
         self.send_all('Penalty card for {} '.format(player.name) + reason)
+        if type(player) is int:
+            player = self.player_hander.get_player(player)
         if player in self.player_handler.players:
             self.update_deck()
             cards = self.deck.remove(0, penalty_num) + cards

@@ -79,7 +79,7 @@ class PlayerHandler(object):
                 index += len(self.players)
             return self.players[index]
         else:
-            return None
+            raise KeyError, "No players in the list!"
 
     def next_player(self):
         """Sets the current player to the next player to play"""
