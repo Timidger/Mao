@@ -348,6 +348,7 @@ class Server(object):
             'for playing out of turn!'))
     
     def __enter__(self):
+        threading.Thread(name = "Main Game loop",target = server.main_loop)
         return self
     
     def __exit__(self, type, value, traceback):
