@@ -12,9 +12,6 @@ from OptionsParser import config_parser
 from collections import OrderedDict
 
 
-#Whenever a card sends, acquire a lock!
-
-
 class Hand(Tkinter.Frame, object):
     def __init__(self, master, Client):
         super(Hand, self).__init__(master)
