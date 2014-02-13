@@ -199,8 +199,10 @@ class Server(object):
                'Punishment','penalty_num'), reason = None, cards = None):
         """The player is punished by being given penalty_num of cards.
         Raises a KeyError if the player is not in the list of players.
-        If cards is given, then it appends that to the cards so that they are
-        sent as one batch"""
+        If cards is given, then it appends that to the cards. This option is
+        available so that cards are sent as one batch, so as to fix hand syncing
+        issues when sending back cards for playing out of turn while at the same
+        time punishing the player."""
         if cards is None:
             cards = ()
         if reason is None:
