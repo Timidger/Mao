@@ -43,16 +43,10 @@ class Display(Tkinter.Frame, object):
         self.hand = Hand(self.master, self.client)
         self.chat = Chat(self.master, self.client)
 
-        self.deck.columnconfigure(1, weight = 1)
-        self.pile.rowconfigure(1, weight = 1)
-        self.pile.columnconfigure(2, weight = 1)
-        self.hand.columnconfigure(1, weight = 1)
-        self.chat.columnconfigure(2, weight = 1)
-
-        self.deck.grid()
-        self.pile.grid()
-        self.hand.grid(expand = 1)
-        self.chat.grid(expand = 0)
+        self.deck.grid(column = 0, row = 1)
+        self.pile.grid(column = 2, row = 1)
+        self.hand.grid(column = 1, row = 0)
+        self.chat.grid(column = 1, row = 1)
 
     def wait_to_destroy(self):
         #Looks kinda weird, but it destroys GUI when client disconnects
