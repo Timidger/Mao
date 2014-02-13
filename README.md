@@ -3,16 +3,31 @@
 
 ##Rules
 Unlike most adaptations of the card game, you create rules by programming them in Python modules. Each rule is a function that takes a single parameter, `server`, which is the entire server object. Though this gives rules a lot of power, this is counteracted by the avaliablity of the source code.
-Here is an example rule:
+
+The `trigger` that activate the rule (which is either a phrase or a card) is determined when the rule is imported into the server. It is not part of the rule's code.
+
+Any side effects from a rule's `trigger`, (i.e: placing down a card while it is your turn means it is the next player's turn) happen *before* the rule's code executes. In other words, if a rule whose trigger is a card, the code `server.player_handler.next_player()` will execute after the turn has already switched, meaning it is the same player's turn *again*.
+
+Here some example rules:
 
 ```python
 def flip_deck(server):
     server.deck.cards = server.deck.cards[::-1]
-    server.deck.update_top_card()
 ```
-This function simply flips the deck.
+This rule flips the deck.
 
-The `update_top_card` call is required to update the top card, which holds a reference to the top card. This will probably be incorporated into its own check eventually, because this could cause display problems if it is forgotten.
+```python
+def skip_player(server):
+    server.player_handler.next_player()
+```
+This rule skips the current player 
+
+```python
+def reverse_order(server):
+    server.player_handler.order = -server.player_handler.order
+    server.player_handler.next_player()
+```
+This rule flips the order around, and then goes to the next player. Because of the timing of rule execution, the code executes *after* the player's input is handled, so if this was the effect of placing down a card successfully, the player that just went is the current player.
 
 ##Server Configuration
 The 'options.cfg' file contains options to control server options, such as the default amount of cards that a player receives when they are punished.

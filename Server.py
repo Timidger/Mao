@@ -283,13 +283,12 @@ class Server(object):
                 if not self.is_running():
                     #else it'd sent to a broken socket
                     break
-                for code in (
-                self.rule_handler.check_rules(data, config_parser.get(
-                'Rules','allow_no_trigger'))):
+                self.handle_data(data, player)
+                for code in (self.rule_handler.check_rules(
+                data, config_parser.get('Rules','allow_no_trigger'))):
                     threading.Thread(name = 'A Rule thread',
                                      target = code,
                                      args = (self,)).start()
-                self.handle_data(data, player)
         except (socket.error):
             print "Socket error while listening to {}".format(player)
         except (socket.timeout):
