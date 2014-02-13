@@ -4,7 +4,7 @@ Created on Fri Dec 28 13:12:58 2012
 
 @author: Preston
 """
-import Player, Pile, socket, threading, pickle, sys
+import Player, Pile, socket, threading, pickle, sys, time
 import time, random, Queue
 from OptionsParser import config_parser
 from Card import Card
@@ -354,6 +354,7 @@ class Server(object):
         self.shutdown()
 
 if __name__ == '__main__':
+    start_time = time.time()
     from PlayerHandler import PlayerHandler
     from RuleHandler import RuleHandler
     from Rule import Rule
@@ -374,6 +375,10 @@ if __name__ == '__main__':
     print 'Server at {}:{}'.format(ip or 'localhost', port)
     MAIN_THREAD = threading.Thread(target = server.main_loop)
     print "Type 'MAIN_THREAD.start()' to start the game!"
+
+    def uptime():
+        print "The server has been running for {} seconds".format(
+        int(time.time() - start_time))
 
     def shutdown():
         server.shutdown()
