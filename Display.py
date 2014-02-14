@@ -36,8 +36,6 @@ class Display(Tkinter.Frame, object):
     def start_game(self):
         self.client = Client(int(self.port_box.get()), self.ip_box.get(),
                         self.name_box.get())
-        Thread(name = "Destroy wait thread",
-               target = self.wait_to_destroy).start()
         self.start_frame.destroy()
         self.deck = Deck(self.master, self.client)
         self.pile = Stack(self.master, self.client)
