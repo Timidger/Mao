@@ -36,7 +36,6 @@ class Server(object):
         self.update_deck()
         self._main_event = threading.Event()
 
-
     def is_running(self):
         "Returns True if the server is running, or False if it is not"
         return not self._server_running.is_set()
@@ -315,9 +314,9 @@ class Server(object):
                         card = data.rank + ' of ' + data.suit)
                 card = player.get_card(card_index)
                 if any((
-                card.suit == self.pile.top_card.suit 
+                card.suit == self.pile.top_card.suit
                 or not self.pile.top_card.suit,
-                card.rank == self.pile.top_card.rank 
+                card.rank == self.pile.top_card.rank
                 or not self.pile.top_card.rank)):
                     print ('{card} is now the top card'.format(
                     card = card.rank + ' of ' + card.suit))
@@ -368,11 +367,11 @@ class Server(object):
                                          'from saying {}'.format(data)),
                                  target = code,
                                  args = (self,)).start()
-    
+
     def __enter__(self):
         threading.Thread(name = "Main Game loop",target = server.main_loop)
         return self
-    
+
     def __exit__(self, type, value, traceback):
         self.shutdown()
 
