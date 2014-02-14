@@ -16,7 +16,8 @@ class PlayerHandler(object):
         else:
             self.players = list(players)
         self.current_player = None
-        self.next_player()
+        if self.players:
+            self.next_player()
         self.order = order
 
     def get_current_player(self):
