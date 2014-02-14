@@ -289,11 +289,6 @@ class Server(object):
                     #else it'd sent to a broken socket
                     break
                 self.handle_data(data, player)
-                for code in (self.rule_handler.check_rules(
-                data, config_parser.get('Rules','allow_no_trigger'))):
-                    threading.Thread(name = 'A Rule thread',
-                                     target = code,
-                                     args = (self,)).start()
         except (socket.error):
             print "Socket error while listening to {}".format(player)
         except (socket.timeout):
@@ -329,6 +324,12 @@ class Server(object):
                     self._main_event.set()
                     self.pile.add((card,))
                     self.send_all(card)
+                    for code in (self.rule_handler.check_rules(
+                    card, config_parser.get('Rules','allow_no_trigger'))):
+                        threading.Thread(name = ('A Rule thread '
+                                                 'from playing {}'.format(card),
+                                         target = code,
+                                         args = (self,)).start()
                 else:
                     print (
                     '{card} was given back to {player}'.format(
@@ -361,6 +362,12 @@ class Server(object):
                 data = (data,)
             self.punish(player, cards = data, reason = (
             'for playing out of turn!'))
+            for code in (self.rule_handler.check_rules(
+            data, config_parser.get('Rules','allow_no_trigger'))):
+                threading.Thread(name = ('A Rule thread '
+                                         'from saying {}'.format(data),
+                                 target = code,
+                                 args = (self,)).start()
     
     def __enter__(self):
         threading.Thread(name = "Main Game loop",target = server.main_loop)
