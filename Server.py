@@ -257,9 +257,12 @@ class Server(object):
                 print 'Current Player: {}'.format(
                     self.player_handler.get_current_player())
                 if self.constantly_punish(self.player_handler.current_player,
-                                    penalty_num, timer,
-                                    self._main_event):
-                #Wait for a player to play
+                penalty_num, timer, self._main_event):
+                    for code in (self.rule_handler.check_rules(None, True)):
+                        threading.Thread(name = 'A Rule thread',
+                                         target = code,
+                                         args = (self,)).start()
+
                     self.player_handler.next_player()
                     self.player_handler.update_order()
                     self.update_deck()
@@ -323,8 +326,7 @@ class Server(object):
                     self._main_event.set()
                     self.pile.add((card,))
                     self.send_all(card)
-                    for code in (self.rule_handler.check_rules(
-                    card, config_parser.get('Rules','allow_no_trigger'))):
+                    for code in (self.rule_handler.check_rules(card)):
                         threading.Thread(name = ('A Rule thread from '
                                                  'playing {}'.format(card)),
                                          target = code,
@@ -361,8 +363,7 @@ class Server(object):
                 data = (data,)
             self.punish(player, cards = data, reason = (
             'for playing out of turn!'))
-            for code in (self.rule_handler.check_rules(
-            data, config_parser.get('Rules','allow_no_trigger'))):
+            for code in (self.rule_handler.check_rules(data)):
                 threading.Thread(name = ('A Rule thread '
                                          'from saying {}'.format(data)),
                                  target = code,
