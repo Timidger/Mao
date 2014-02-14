@@ -326,8 +326,8 @@ class Server(object):
                     self.send_all(card)
                     for code in (self.rule_handler.check_rules(
                     card, config_parser.get('Rules','allow_no_trigger'))):
-                        threading.Thread(name = ('A Rule thread '
-                                                 'from playing {}'.format(card),
+                        threading.Thread(name = ('A Rule thread from '
+                                                 'playing {}'.format(card)),
                                          target = code,
                                          args = (self,)).start()
                 else:
@@ -365,7 +365,7 @@ class Server(object):
             for code in (self.rule_handler.check_rules(
             data, config_parser.get('Rules','allow_no_trigger'))):
                 threading.Thread(name = ('A Rule thread '
-                                         'from saying {}'.format(data),
+                                         'from saying {}'.format(data)),
                                  target = code,
                                  args = (self,)).start()
     
