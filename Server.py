@@ -314,11 +314,11 @@ class Server(object):
                         player = player.name,
                         card = data.rank + ' of ' + data.suit)
                 card = player.get_card(card_index)
-                if all((
-                (card.suit == self.pile.top_card.suit 
-                or not self.pile.top_card.suit),
-                (card.rank == self.pile.top_card.rank 
-                or not self.pile.top_card.rank))):
+                if any((
+                card.suit == self.pile.top_card.suit 
+                or not self.pile.top_card.suit,
+                card.rank == self.pile.top_card.rank 
+                or not self.pile.top_card.rank)):
                     print ('{card} is now the top card'.format(
                     card = card.rank + ' of ' + card.suit))
                     self._main_event.set()
