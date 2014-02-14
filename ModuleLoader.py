@@ -12,13 +12,13 @@ def import_module(module_name):
     """Searches the Variants directory for module_name and returns it"""
     assert type(module_name) == str
     try:
-        module = __import__("Variants." + module_name, 
+        module = __import__("Rules." + module_name, 
                             fromlist = ["filler"])
                             #non-empty list imports module_name
     except ImportError, e:
         raise (ImportError, 
                "Could not find {} in {}".format(module_name, 
-                os.getcwd() + os.sep + "Variants"))
+                os.getcwd() + os.sep + "Rules"))
         
     return module
 

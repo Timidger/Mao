@@ -6,7 +6,6 @@ Created on Fri Dec 28 13:14:57 2012
 """
 import os
 from Card import Card
-import Variants
 
 
 class RuleHandler(object):
