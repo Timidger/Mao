@@ -323,11 +323,12 @@ class Server(object):
                 or not self.pile.top_card.suit,
                 card.rank == self.pile.top_card.rank
                 or not self.pile.top_card.rank)):
+                    self._main_event.set()
                     print ('{card} is now the top card'.format(
                     card = card.rank + ' of ' + card.suit))
-                    self._main_event.set()
                     self.pile.add((card,))
                     self.send_all(card)
+                    time.sleep(.1)
                     for code in (self.rule_handler.check_rules(card)):
                         threading.Thread(name = ('A Rule thread from '
                                                  'playing {}'.format(card)),
