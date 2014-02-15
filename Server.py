@@ -194,8 +194,7 @@ class Server(object):
         self.clients.iteritems())}
         return reversed_map.get(player)
 
-    def punish(self, player, penalty_num = config_parser.getint(
-               'Punishment','penalty_num'), reason = None, cards = None):
+    def punish(self, player, penalty_num = None, reason = None, cards = None):
         """The player is punished by being given penalty_num of cards. The
         player can either be relative (a number) or absolute (player object).
         Raises a KeyError if the player (object) is not in the list of players.
@@ -205,6 +204,8 @@ class Server(object):
         available so that cards are sent as one batch, so as to fix hand syncing
         issues when sending back cards for playing out of turn while at the same
         time punishing the player."""
+        if penalty_num <= 0:
+            penalty_num = config_parser.getint('Punishment','penalty_num')
         if cards is None:
             cards = ()
         if reason is None:
