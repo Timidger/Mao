@@ -233,6 +233,7 @@ class Server(object):
         while (not event.wait(punish_timer) and
         player in self.player_handler.players):
             self.punish(player, penalty_num)
+        return True
 
     def update_deck(self):
         "Checks if the deck is getting low (<= 26), and adds card if it is"
