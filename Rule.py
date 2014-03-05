@@ -22,7 +22,7 @@ class Rule(object):
         script -- executable python code. Either a lambda, function, compiled
         code object, or class. The only requriement is that it takes one
         parametre, which will represnt the Server. A lambda is discouraged,
-        as that is hard to identify (function name just gives "lambda""""
+        as that is hard to identify (function name just gives "lambda" """
         assert type(name) == str
         self.name = name
         self.trigger = trigger
