@@ -259,16 +259,12 @@ class Server(object):
                     self.player_handler.get_current_player())
                 if self.constantly_punish(self.player_handler.current_player,
                 penalty_num, timer, self._main_event):
-                    for code in (self.rule_handler.check_rules(None, True)):
-                        threading.Thread(name = 'A Rule thread',
-                                         target = code,
-                                         args = (self,)).start()
-
-                    self.player_handler.next_player()
                     self.player_handler.update_order()
+                    self.player_handler.next_player()
                     self.update_deck()
-                    self.deck.update_top_card()
                     self._main_event.clear()
+                    self.rule_handler.execute_rules(
+                    self.rule_handler.check_rules(None, True), self)
             else:
                 time.sleep(1)
         self._main_event.set()
@@ -329,11 +325,8 @@ class Server(object):
                     self.pile.add((card,))
                     self.send_all(card)
                     time.sleep(.1)
-                    for code in (self.rule_handler.check_rules(card)):
-                        threading.Thread(name = ('A Rule thread from '
-                                                 'playing {}'.format(card)),
-                                         target = code,
-                                         args = (self,)).start()
+                    self.rule_handler.execute_rules(
+                    self.rule_handler.check_rules(card), self)
                 else:
                     print (
                     '{card} was given back to {player}'.format(
@@ -366,12 +359,8 @@ class Server(object):
                 data = (data,)
             self.punish(player, cards = data, reason = (
             'for playing out of turn!'))
-            for code in (self.rule_handler.check_rules(data)):
-                threading.Thread(name = ('A Rule thread '
-                                         'from saying {}'.format(data)),
-                                 target = code,
-                                 args = (self,)).start()
-
+            self.rule_handler.execute_rules(
+            self.rule_handler.check_rules(data), self)
     def __enter__(self):
         threading.Thread(name = "Main Game loop",target = server.main_loop)
         return self

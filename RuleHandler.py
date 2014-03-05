@@ -5,6 +5,7 @@ Created on Fri Dec 28 13:14:57 2012
 @author: Preston
 """
 import os
+import threading
 from Card import Card
 
 
@@ -37,6 +38,22 @@ class RuleHandler(object):
                         if trigger == trigger or not trigger and check_none:
                             rule_scripts.append(self.rules.get(rule))
         return rule_scripts
+    
+    def execute_rules(self, scripts, server):
+        """For each rule in scripts, executes the rule's script in a seperate
+        thread. Returns the list of the threads"""
+        threads = []
+        for rule in scripts:
+            thread = threading.Thread(name = "Rule Thread for {}".format(
+             "saying " + rule.trigger if type(rule.trigger) == str 
+             else "playing " + rule.trigger),
+                             target = rule.script,
+                             args = server)
+            threads.append(thread)
+        for thread in threads:
+            thread.start()
+        return threads
+                             
 
     def add_rule(self, rule):
         """If the rule is not in the rules, adds it to the rules. If the
