@@ -21,3 +21,6 @@ class Card(object):
     def __repr__(self):
         return "A Card with suit = {} and rank = {}".format(
         self.suit, self.rank)
+    
+    def __str__(self):
+        return "{} of {}".format(self.rank, self.suit)
