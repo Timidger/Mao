@@ -169,13 +169,12 @@ class Server(object):
         finally:
             client.close()
             self.deck.add(player.hand)
-            self.deck.shuffle()
+            self.update_deck()
             if player is self.player_handler.current_player:
                 self._main_event.set() #Stop the thread
             self.player_handler.remove_player(player)
             self.send_all('{} disconnected'.format(player.name))
             self.send_all(self.player_handler.players)
-            #Just added this, hope it works aight
             print '{} disconnected'.format(player.name)
 
     def shutdown(self):
