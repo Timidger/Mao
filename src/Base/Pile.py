@@ -5,7 +5,7 @@ Created on Fri Dec 28 13:12:58 2012
 @author: Preston
 """
 import random
-from Card import Card
+from .Card import Card
 
 
 class Pile(object):

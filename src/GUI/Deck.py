@@ -5,7 +5,7 @@ Created on Sun Sep 15 23:01:34 2013
 @author: timidger
 """
 import Tkinter
-from Card import Card
+from ..Base import Card
 
 
 class Deck(Tkinter.Frame, object):

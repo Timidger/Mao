@@ -7,11 +7,11 @@ Created on Mon Sep 16 08:07:15 2013
 
 import Tkinter
 from threading import Thread
-from Client import Client
-from Deck import Deck
-from Stack import Stack
-from Hand import Hand
-from Chat import Chat
+from ..Client.Client import Client
+from ..Base import Deck
+from . import Stack
+from . import Hand
+from . import Chat
 
 
 class Display(Tkinter.Frame, object):

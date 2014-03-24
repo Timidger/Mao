@@ -4,7 +4,7 @@ Created on Fri Dec 28 13:12:58 2012
 
 @author: Preston
 """
-from Client import Client
+from ..Client.Client import Client
 import Tkinter
 import threading
 import Queue

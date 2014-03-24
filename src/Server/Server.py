@@ -4,8 +4,6 @@ Created on Fri Dec 28 13:12:58 2012
 
 @author: Preston
 """
-import Player
-import Pile
 import socket
 import threading
 import pickle
@@ -13,8 +11,10 @@ import sys
 import time
 import random
 import Queue
-from OptionsParser import config_parser
-from Card import Card
+from ..Base import Player
+from ..Base.Card import Card
+from ..Base import Pile
+from ..Base.OptionsParser import config_parser
 
 
 class Server(object):

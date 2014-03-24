@@ -8,9 +8,9 @@ import socket
 import pickle
 import threading
 import Queue
-from Card import Card
-from Pile import Pile
-from Player import Player
+from ..Base import Card
+from ..Base import Pile
+from ..Base import Player
 
 
 class Client(object):
@@ -134,10 +134,10 @@ class Client(object):
                     self.message_queue.put(data)
         except (socket.error, socket.timeout):
             self.disconnect()
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, type, value, traceback):
         self.disconnect()
 

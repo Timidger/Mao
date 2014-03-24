@@ -6,12 +6,12 @@ Created on Fri Aug  9 09:13:12 2013
 """
 
 import Tkinter
-import Queue 
+import Queue
 import threading
-from Card import Card
-from Client import Client
-from OptionsParser import config_parser
 from collections import OrderedDict
+from ..Base import Card
+from ..Client.Client import Client
+from ..Base import config_parser
 
 
 class Hand(Tkinter.Frame, object):

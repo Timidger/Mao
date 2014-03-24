@@ -8,7 +8,7 @@ Created on Fri Aug  9 12:59:49 2013
 import Tkinter
 import Queue
 import threading
-from Client import Client
+from ..Client.Client import Client
 
 
 class Stack(Tkinter.Frame, object):
