@@ -1,10 +1,10 @@
 import time
 import threading
-from Mao.Server.Server import Server
-from Mao.Server.PlayerHandler import PlayerHandler
-from Mao.Server.RuleHandler import RuleHandler
-from Mao.Base.Rule import Rule
-from Mao.Base.OptionsParser import config_parser
+from src.Server.Server import Server
+from src.Server.PlayerHandler import PlayerHandler
+from src.Server.RuleHandler import RuleHandler
+from src.Base.Rule import Rule
+from src.Base.OptionsParser import config_parser
 
 start_time = time.time()
 
