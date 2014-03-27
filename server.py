@@ -1,5 +1,6 @@
 import time
 import threading
+import atexit
 from src.Server.Server import Server
 from src.Server.PlayerHandler import PlayerHandler
 from src.Server.RuleHandler import RuleHandler
@@ -30,8 +31,4 @@ def uptime():
     print "The server has been running for {} seconds".format(
     int(time.time() - start_time))
 
-def shutdown():
-    server.shutdown()
-    exit()
-
-print "Type 'shutdown()' to shutdown the server; DON'T exit the prompt"
+atexit.register(server.shutdown)
