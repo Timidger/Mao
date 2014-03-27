@@ -26,9 +26,11 @@ class Server(object):
         self.server.listen(5)
         self.clients = {}
         self._server_running = threading.Event()
-        threading.Thread(name = 'Connection Thread',
-                         target = (self.get_connections),
-                         args = (self.server,)).start()
+        connection_thread = threading.Thread(name = 'Connection Thread',
+                                               target = (self.get_connections),
+                                               args = (self.server,))
+        connection_thread.daemon = True # So the main thread can stop
+        connection_thread.start()
         self.player_handler = player_handler
         self.rule_handler = rule_handler
         self.deck = Pile.Pile()
@@ -366,36 +368,3 @@ class Server(object):
 
     def __exit__(self, type, value, traceback):
         self.shutdown()
-
-if __name__ == '__main__':
-    start_time = time.time()
-    from PlayerHandler import PlayerHandler
-    from RuleHandler import RuleHandler
-    from Rule import Rule
-    def test_rule(server_object):
-        global a
-        a = exit
-    rules = [Rule('Test Rule', None, test_rule)]
-    RH = RuleHandler(rules)
-    PH = PlayerHandler([])
-    ip = config_parser.get('Misc.', 'ip')
-    port = config_parser.getint('Misc.', 'port')
-    players = PH.players
-    server = Server(RH, PH, port, ip)
-    clients = server.clients
-    deck = server.deck
-    pile = server.pile
-
-    print 'Server at {}:{}'.format(ip or 'localhost', port)
-    MAIN_THREAD = threading.Thread(target = server.main_loop)
-    print "Type 'MAIN_THREAD.start()' to start the game!"
-
-    def uptime():
-        print "The server has been running for {} seconds".format(
-        int(time.time() - start_time))
-
-    def shutdown():
-        server.shutdown()
-        exit()
-
-    print "Type 'shutdown()' to shutdown the server; DON'T exit the prompt"
