@@ -10,7 +10,7 @@ from .Card import Card
 
 class Pile(object):
     """Creates a place for cards to be placed"""
-    def __init__(self, cards = None):
+    def __init__(self, cards=None):
         if cards is None:
             self.cards = []
         else:
@@ -24,15 +24,15 @@ class Pile(object):
         else:
             self.top_card = Card(None, None)
 
-    def shuffle(self): #Modern Fisher-Yates Shuffle Algorithm
+    def shuffle(self):  # Modern Fisher-Yates Shuffle Algorithm
         """Shuffles the deck"""
         for first in range(len(self.cards) - 1, 0, -1):
             second = random.randint(0, first)
-            self.cards[second], self.cards[first] = (
-            self.cards[first], self.cards[second])
+            self.cards[second], self.cards[first] = (self.cards[first],
+                                                     self.cards[second])
         self.update_top_card()
 
-    def add(self, cards, index = 0):
+    def add(self, cards, index=0):
         """Adds cards to the pile at the appropriate index, which is the
         top card by default. Cards needs to be iterable"""
         for card in cards:
@@ -40,7 +40,7 @@ class Pile(object):
         if not index:
             self.update_top_card()
 
-    def remove(self, index = 0):
+    def remove(self, index=0):
         """Removes n number of cards from the pile at the appropriate index"""
         card = self.cards.pop(index)
         if not index:
@@ -48,5 +48,4 @@ class Pile(object):
         return card
 
     def __repr__(self):
-        return "A Pile with these three cards on top: {}".format(
-        self.cards[0:3])
+        return "A Pile with {} cards".format(len(self.cards))
