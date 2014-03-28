@@ -134,9 +134,9 @@ class Server(object):
                 data += message
             client.settimeout(None)
             first, second = data.rsplit(';', 1)
-            first = pickle.loads(first)
             if first == '':
                 raise socket.error('The Client closed the connection!')
+            first = pickle.loads(first)
             data = []
             data.append(first)
             if second:
@@ -311,12 +311,11 @@ class Server(object):
             player = player.name, message = data)
         elif player == self.player_handler.current_player and (
         type(data) == Card):
-            card_index = player.get_card_index(data)
-            if card_index is not None:#Card index could be 0
+            card = data
+            if card in player.hand:
                 print '{player} attempted to play {card}'.format(
                         player = player.name,
                         card = data.rank + ' of ' + data.suit)
-                card = player.get_card(card_index)
                 if any((
                 card.suit == self.pile.top_card.suit
                 or not self.pile.top_card.suit,
@@ -339,7 +338,7 @@ class Server(object):
                     if not data.rank and not data.suit:
                         data = None
                     else:
-                        data = (data,)
+                        data = [data]
                     self.punish(player, cards = data, reason = (
                     "for not playing a valid card"))
             elif not data.rank and not data.suit:

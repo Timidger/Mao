@@ -69,9 +69,9 @@ class Client(object):
             data += message
         self.server.settimeout(None)
         first, second = data.rsplit(';', 1)
-        first = pickle.loads(first)
         if first == '':
             raise socket.error('The Server closed the connection!')
+        first = pickle.loads(first)
         data = []
         data.append(first)
         if second:

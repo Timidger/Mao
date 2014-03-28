@@ -19,6 +19,9 @@ class Card(object):
     def change_rank(self, new_rank):
         self.rank = new_rank
 
+    def __eq__(self, other_card):
+        return (other_card.rank, other_card.suit) == (self.rank, self.suit)
+
     def __repr__(self):
         return "{} of {}".format(self.rank, self.suit)
 

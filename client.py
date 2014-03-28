@@ -31,8 +31,7 @@ while client.is_running():
                     print 'No top card!'
             elif command[0] == 'hand':
                 for index, card in enumerate(client.player.hand):
-                    print str(index) + ': ' + (
-                    card.rank + ' of ' + card.suit)
+                    print str(index) + ': ' + str(card)
             elif command[0] == 'send' and command[1]:
                 try:
                     card = (client.player.get_card(int(command[1])))
