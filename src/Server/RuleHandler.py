@@ -19,39 +19,38 @@ class RuleHandler(object):
                 self.add_rule(rule)
 
     def check_rules(self, trigger, check_none = False):
-        """Using the trigger as a key, returns a list of the rule scripts
+        """Using the trigger as a key, returns a list of the rules
         that pass the check; if check_None is given and True, triggers that
         are None also get counted."""
-        rule_scripts = []
+        rules = []
         if type(trigger) == Card:
             trigger = trigger.rank, trigger.suit
         for rule in self.rules:
-            if not rule.triggers and check_none:
-                rule_scripts.append(self.rules.get(rule))
+            if not rule.trigger and check_none:
+                rules.append(rule)
             else:
-                for trigger in rule.triggers:
-                    if type(trigger) == Card and type(trigger) == Card:
-                        if all((trigger.rank == trigger.rank,
-                        trigger.suit == trigger.suit)):
-                            rule_scripts.append(self.rules.get(rule))
-                    elif type(trigger) == str and type(trigger) == str:
-                        if trigger == trigger or not trigger and check_none:
-                            rule_scripts.append(self.rules.get(rule))
-        return rule_scripts
+                if type(rule.trigger) == Card and type(trigger) == Card:
+                    if all((rule.trigger.rank == trigger.rank,
+                    rule.trigger.suit == trigger.suit)):
+                        rules.append(rule)
+                elif type(rule.trigger) == str and type(trigger) == str:
+                    if (rule.trigger == trigger
+                       or not rule.trigger and check_none):
+                        rules.append(rule)
+        return rules
 
-    def execute_rules(self, scripts, server):
-        """For each rule in scripts, executes the rule's script in a seperate
+    def execute_rules(self, rules, server):
+        """For each rule in rules, executes the rule's script in a seperate
         thread. Returns the list of the threads"""
-        threads = []
-        for rule in scripts:
-            thread = threading.Thread(name = "Rule Thread for {}".format(
-             "saying " + rule.trigger if type(rule.trigger) == str
-             else "playing " + rule.trigger),
-                             target = rule.script,
-                             args = server)
-            threads.append(thread)
+        # Generate the threads that will run the rules in parallel
+        threads = [threading.Thread(name="Thread for {}".format(rule.name,
+                                    target=rule.script,
+                                    args=server))
+                   for rule in rules]
         for thread in threads:
             thread.start()
+        # If stoppable threads needs to be implemented,
+        # this can allow access to them
         return threads
 
 
