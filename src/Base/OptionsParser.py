@@ -9,6 +9,8 @@ from ConfigParser import ConfigParser
 
 
 def load_configuration(file_name):
+    """In the current directory, the configuration file named file_name is
+    loaded and returned in a ConfigParser"""
     config_parser = ConfigParser(allow_no_value=True)
     if not file_name.endswith(".cfg"):
         file_name += ".cfg"
