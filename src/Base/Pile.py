@@ -16,13 +16,6 @@ class Pile(object):
         else:
             self.cards = list(cards)
             self.shuffle()
-        self.update_top_card()
-
-    def update_top_card(self):
-        if self.cards:
-            self.top_card = self.cards[0]
-        else:
-            self.top_card = Card(None, None)
 
     def shuffle(self):  # Modern Fisher-Yates Shuffle Algorithm
         """Shuffles the deck"""
@@ -30,21 +23,16 @@ class Pile(object):
             second = random.randint(0, first)
             self.cards[second], self.cards[first] = (self.cards[first],
                                                      self.cards[second])
-        self.update_top_card()
 
     def add(self, cards, index=0):
         """Adds cards to the pile at the appropriate index, which is the
         top card by default. Cards needs to be iterable"""
         for card in cards:
             self.cards.insert(index, card)
-        if not index:
-            self.update_top_card()
 
     def remove(self, index=0):
         """Removes and returns a card at the appropriate index"""
         card = self.cards.pop(index)
-        if not index:
-            self.update_top_card()
         return card
 
     def __repr__(self):
