@@ -14,16 +14,17 @@ import Queue
 from ..Base import Player
 from ..Base.Card import Card
 from ..Base import Pile
-from ..Base.OptionsParser import config_parser
 
 
 class Server(object):
-    def __init__(self, rule_handler, player_handler, port = None,
-                 ip_address = None):
+    def __init__(self, rule_handler, player_handler, config_parser,
+                 port = None, ip_address = None):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((ip_address or socket.getfqdn(), int(port)))
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.listen(5)
+
+        self.config = config_parser
         self.clients = {}
         self._server_running = threading.Event()
         connection_thread = threading.Thread(name = 'Connection Thread',
@@ -57,7 +58,7 @@ class Server(object):
                 ':'.join((address[0], str(address[1]))))
 
                 if client not in self.clients and (
-                config_parser.getint('Players', 'max_players')
+                self.config.getint('Players', 'max_players')
                 or sys.maxint) > len(self.clients):
                     player = self.authorise_player(client)
                     self.clients.update({client: player})
@@ -94,7 +95,7 @@ class Server(object):
         self.send_all('[{} Joined!]'.format(player_name))
         self.update_deck()
         return Player.Player(player_name, hand = self.deck.remove(0,
-                               config_parser.getint('Cards', 'hand_size')))
+                               self.config.getint('Cards', 'hand_size')))
 
     @staticmethod
     def send(data, client):
@@ -206,11 +207,11 @@ class Server(object):
         issues when sending back cards for playing out of turn while at the same
         time punishing the player."""
         if penalty_num <= 0:
-            penalty_num = config_parser.getint('Punishment','penalty_num')
+            penalty_num = self.config.getint('Punishment','penalty_num')
         if cards is None:
             cards = ()
         if reason is None:
-            reason = random.choice(config_parser.get(
+            reason = random.choice(self.config.get(
                     'Punishment', 'default_phrases').split(';')).format(
                     name = player.name, random_card = (
                     random.choice(player.hand).rank + ' of ' + (
@@ -248,12 +249,14 @@ class Server(object):
             self.deck.shuffle()
             self.deck.update_top_card()
 
-    def main_loop(self, timer = config_parser.getint('Punishment', 'timer'),
-                  penalty_num = config_parser.getint('Punishment',
-                  'penalty_num')):
+    def main_loop(self, timer = None, penalty_num = None):
         """Main loop that should be called after initalisation. timer is the
         amount of time a player has to play before he is punished for taking
         too long and penalty num is the amount he is punished by"""
+        if not timer:
+            timer = self.config.getint('Punishment', 'timer')
+        if penalty_num is None:
+            penalty_num = self.config.getint('Punishment', 'penalty_num')
         while self.is_running():
             if self.player_handler.current_player:
                 print 'Current Player: {}'.format(
