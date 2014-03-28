@@ -35,5 +35,14 @@ class Pile(object):
         card = self.cards.pop(index)
         return card
 
+    def __getitem__(self, index):
+        if self.cards:
+            return self.cards[index]
+        else:
+            return Card(None, None)
+
+    def __len__(self):
+        return len(self.cards)
+
     def __repr__(self):
         return "A Pile with {} cards".format(len(self.cards))
