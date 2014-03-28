@@ -5,6 +5,7 @@ Created on Fri Dec 28 13:12:58 2012
 @author: Preston
 """
 
+
 class Card(object):
     """A card is made up of a suit, rank, and is represented in the game by a
     texture."""
@@ -19,8 +20,7 @@ class Card(object):
         self.rank = new_rank
 
     def __repr__(self):
-        return "A Card with suit = {} and rank = {}".format(
-        self.suit, self.rank)
-    
+        return "{} of {}".format(self.rank, self.suit)
+
     def __str__(self):
         return "{} of {}".format(self.rank, self.suit)
