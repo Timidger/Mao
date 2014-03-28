@@ -7,9 +7,7 @@ Created on Fri Dec 28 13:14:12 2012
 
 
 class Player(object):
-    """Creates a player that has a name, a hand of cards, and starts
-    playing until he is removed from play either through a rule or when he
-    runs out of cards"""
+    """Player which has a unique name and a hand of cards"""
     def __init__(self, name, hand=None, address=None):
         """Creates a new player for a game which has a hand and name"""
         if hand is None:
