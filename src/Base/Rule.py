@@ -10,30 +10,26 @@ from Queue import Queue
 
 
 class Rule(object):
-    """Creates a new rule object which, has a name (for identification),
-    a trigger, and a script,which is some executable python code, whether it is
-    a function, lambda, compiled code object, or even an entire object
-    (assuming it implements __call__). The only requriement for the code is
-    that there is exactly one parameter that will represent the
-    entire Server object"""
+    """Object that holds the information of a Mao game rule. Has a name for
+    identification, a trigger to know when to execute, and a function to
+    execute. The function requires a single argument which represent a server
+    object"""
     def __init__(self, name, trigger, function):
-        """name -- a simple name to easily identify a rule
-        trigger -- card or phrase that invokes the rule
-
-        script -- executable python code. Either a lambda, function, compiled
-        code object, or class. The only requriement is that it takes one
-        parametre, which will represnt the Server. A lambda is discouraged,
-        as that is hard to identify (function name just gives "lambda" """
-        assert type(name) == str
-        self.name = name
+        """
+        Args:
+            name(str): A simple name to easily identify a rule
+            trigger(card or str): card or phrase that invokes the rule
+        """
+        self.name = named
         self.trigger = trigger
         # Make sure there is one and only one argument
-        assert len(getargspec(script)[0]) == 1
-        self.script = script
+        assert len(getargspec(function)[0] == 1
+        self.function = function
+
 
     def __repr__(self):
         return ("Rule named {} which executes '{}'").format(
-            self.name, self.script.__name__)
+            self.name, self.function.__name__)
 
 if __name__ == '__main__':
     pass
