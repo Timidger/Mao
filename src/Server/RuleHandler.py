@@ -44,7 +44,7 @@ class RuleHandler(object):
         thread. Returns the list of the threads"""
         # Generate the threads that will run the rules in parallel
         threads = [threading.Thread(name="Thread for {}".format(rule.name,
-                                    target=rule.script,
+                                    target=rule.function,
                                     args=server))
                    for rule in rules]
         for thread in threads:
@@ -58,7 +58,7 @@ class RuleHandler(object):
         """If the rule is not in the rules, adds it to the rules. If the
         rulewas added, returns True. Else, returns False."""
         if rule not in self.rules:
-            self.rules.update({rule: rule.script})
+            self.rules.update({rule: rule.function})
             return True
         else:
             return False
