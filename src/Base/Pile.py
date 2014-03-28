@@ -30,6 +30,7 @@ class Pile(object):
             second = random.randint(0, first)
             self.cards[second], self.cards[first] = (
             self.cards[first], self.cards[second])
+        self.update_top_card()
 
     def add(self, cards, index = 0):
         """Adds cards to the pile at the appropriate index, which is the
@@ -39,12 +40,12 @@ class Pile(object):
         if not index:
             self.update_top_card()
 
-    def remove(self, index = 0, cardrange = 1):
+    def remove(self, index = 0):
         """Removes n number of cards from the pile at the appropriate index"""
-        cards = tuple(self.cards.pop(index) for card in xrange(cardrange))
+        card = self.cards.pop(index)
         if not index:
             self.update_top_card()
-        return cards
+        return card
 
     def __repr__(self):
         return "A Pile with these three cards on top: {}".format(

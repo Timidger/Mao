@@ -36,7 +36,6 @@ class Server(object):
         self.rule_handler = rule_handler
         self.deck = Pile.Pile()
         self.pile = Pile.Pile()
-        self.update_deck()
         self._main_event = threading.Event()
 
     def is_running(self):
@@ -93,9 +92,8 @@ class Server(object):
             raise socket.error
         print player_name + ' Joined!'
         self.send_all('[{} Joined!]'.format(player_name))
-        self.update_deck()
-        return Player.Player(player_name, hand = self.deck.remove(0,
-                               self.config.getint('Cards', 'hand_size')))
+        return Player.Player(player_name, hand = self.draw(
+                              self.config.getint('Cards', 'hand_size')))
 
     @staticmethod
     def send(data, client):
@@ -172,7 +170,6 @@ class Server(object):
         finally:
             client.close()
             self.deck.add(player.hand)
-            self.update_deck()
             if player is self.player_handler.current_player:
                 self._main_event.set() #Stop the thread
             self.player_handler.remove_player(player)
@@ -209,7 +206,7 @@ class Server(object):
         if penalty_num <= 0:
             penalty_num = self.config.getint('Punishment','penalty_num')
         if cards is None:
-            cards = ()
+            cards = []
         if reason is None:
             reason = random.choice(self.config.get(
                     'Punishment', 'default_phrases').split(';')).format(
@@ -220,8 +217,7 @@ class Server(object):
         if type(player) is int:
             player = self.player_hander.get_player(player)
         if player in self.player_handler.players:
-            self.update_deck()
-            cards = self.deck.remove(0, penalty_num) + cards
+            cards += self.draw(penalty_num)
             Server.send(cards, self.get_client(player))
             for card in cards:
                 player.add_card(card)
@@ -237,17 +233,21 @@ class Server(object):
             self.punish(player, penalty_num)
         return True
 
-    def update_deck(self):
-        "Checks if the deck is getting low (<= 26), and adds card if it is"
-        if len(self.deck.cards) <= 26:
-            suits = []
-            suits = "Spades Hearts Diamonds Clubs".split()
-            ranks = "Ace 2 3 4 5 6 7 8 9 10 King Queen".split()
-            new_deck = (Pile.Pile([Card(suit, rank) for rank in \
-            ranks for suit in suits]))
-            self.deck.add(new_deck.cards)
-            self.deck.shuffle()
-            self.deck.update_top_card()
+    def draw(self, num_of_cards):
+        """Draws num_of_cards from the deck. If the deck gets low (<= 26)
+        at any point, then a new deck is made, combined with the current deck,
+        and then shuffled before drawing continues"""
+        cards = []
+        for card in range(num_of_cards):
+            if len(self.deck.cards) <= 26:
+                suits = "Spades Hearts Diamonds Clubs".split()
+                ranks = "Ace 2 3 4 5 6 7 8 9 10 King Queen".split()
+                new_deck = (Pile.Pile([Card(suit, rank) for rank in
+                            ranks for suit in suits]))
+                self.deck.add(new_deck.cards)
+                self.deck.shuffle()
+            cards.append(self.deck.remove())
+        return cards
 
     def main_loop(self, timer = None, penalty_num = None):
         """Main loop that should be called after initalisation. timer is the
@@ -265,7 +265,6 @@ class Server(object):
                 penalty_num, timer, self._main_event):
                     self.player_handler.update_order()
                     self.player_handler.next_player()
-                    self.update_deck()
                     self._main_event.clear()
                     self.rule_handler.execute_rules(
                     self.rule_handler.check_rules(None, True), self)
