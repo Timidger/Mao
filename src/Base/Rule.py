@@ -23,9 +23,8 @@ class Rule(object):
         self.name = named
         self.trigger = trigger
         # Make sure there is one and only one argument
-        assert len(getargspec(function)[0] == 1
+        assert len(getargspec(function)[0]) == 1
         self.function = function
-
 
     def __repr__(self):
         return ("Rule named {} which executes '{}'").format(
