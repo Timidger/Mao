@@ -31,6 +31,10 @@ class Player(object):
         "Add the card to the player's hand at the index (defaults to 0)"
         self.hand.insert(index, card)
 
+    def __eq__(self, other):
+        assert type(other) == Player
+        return other.name == self.name
+
     def __repr__(self):
         return "Player named {} with {} cards".format(self.name,
                                                       len(self.hand))

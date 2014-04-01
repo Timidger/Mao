@@ -28,6 +28,7 @@ class Card(object):
         return any((self.rank, self.suit))
 
     def __eq__(self, other_card):
+        assert type(other_card) == Card
         return (other_card.rank, other_card.suit) == (self.rank, self.suit)
 
     def __repr__(self):
