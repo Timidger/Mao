@@ -20,7 +20,7 @@ class Rule(object):
             name(str): A simple name to easily identify a rule
             trigger(card or str): card or phrase that invokes the rule
         """
-        self.name = named
+        self.name = name
         self.trigger = trigger
         # Make sure there is one and only one argument
         assert len(getargspec(function)[0]) == 1
