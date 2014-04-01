@@ -5,9 +5,10 @@ Created on Wed Feb 13 18:14:51 2013
 @author: Preston
 """
 
+
 class PlayerHandler(object):
     """Holds and handles players and order"""
-    def __init__(self, players = None, order = 1):
+    def __init__(self, players=None, order=1):
         """The order is how much the list increments (or decrements) every
         time a player finishes his turn, and the players is a list of
         player instances"""
@@ -36,14 +37,12 @@ class PlayerHandler(object):
             return abs(self.players.index(self.current_player) - index)
         else:
             return abs(self.players.index(self.current_player) - (
-            self.players.index(index)))
+                self.players.index(index)))
 
     def update_order(self):
         """If order is configured to be unfair (i.e: not every player will
         play in a given round), then the order reverts to one"""
-        if not self.order or (
-        len(self.players) % 2 == 0 and self.order % 2 == 0) or (
-        len(self.players) % 2 != 0 and self.order % 2 != 0):
+        if len(self.plapers) % self.order != 0 and self.order != 1:
             self.order = 1
         else:
             pass
@@ -80,7 +79,7 @@ class PlayerHandler(object):
                 index += len(self.players)
             return self.players[index]
         else:
-            raise KeyError, "No players in the list!"
+            raise KeyError("No players in the list!")
 
     def next_player(self):
         """Sets the current player to the next player to play"""
