@@ -11,32 +11,24 @@ from ..Base import Card
 
 class RuleHandler(object):
     """Holds rules to be executed from input corresponding to triggers."""
-    def __init__(self, rules = None):
+    def __init__(self, rules=None):
         """Rules should be a list or tuple of rule objects."""
-        self.rules = {} # {rule object: rule script}
+        self.rules = {}  # {rule object: rule script}
         if rules:
             for rule in tuple(rules):
                 self.add_rule(rule)
 
-    def check_rules(self, trigger, check_none = False):
+    def check_rules(self, trigger, check_none=False):
         """Using the trigger as a key, returns a list of the rules
         that pass the check; if check_None is given and True, triggers that
         are None also get counted."""
         rules = []
-        if type(trigger) == Card:
-            trigger = trigger.rank, trigger.suit
         for rule in self.rules:
-            if not rule.trigger and check_none:
+            if not rule.trigger:
+                if check_none:
+                    rules.append(rule)
+            elif rule.trigger == trigger or not rule.trigger and check_none:
                 rules.append(rule)
-            else:
-                if type(rule.trigger) == Card and type(trigger) == Card:
-                    if all((rule.trigger.rank == trigger.rank,
-                    rule.trigger.suit == trigger.suit)):
-                        rules.append(rule)
-                elif type(rule.trigger) == str and type(trigger) == str:
-                    if (rule.trigger == trigger
-                       or not rule.trigger and check_none):
-                        rules.append(rule)
         return rules
 
     def execute_rules(self, rules, server):
@@ -52,7 +44,6 @@ class RuleHandler(object):
         # If stoppable threads needs to be implemented,
         # this can allow access to them
         return threads
-
 
     def add_rule(self, rule):
         """If the rule is not in the rules, adds it to the rules. If the
