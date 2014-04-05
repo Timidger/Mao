@@ -2,11 +2,14 @@ import threading
 import Queue
 from src.Client.Client import Client
 from src.Base.Card import Card
+from src.Base.OptionsParser import load_configuration
 
+#Automated!
+config = load_configuration("server")
 
-ip = raw_input('ip (nothing for localname) = ')
-port = int(raw_input('port = '))
-name = raw_input('name (nothing for "Timidger") = ') or 'Timidger'
+ip = config.get("Misc.", "ip")
+port = config.getint("Misc.", "port")
+name = 'Timidger'
 client = Client(port, ip, name)
 
 def Client_listen():
