@@ -14,7 +14,7 @@ from ..Base.Player import Player
 
 
 class Client(object):
-    def __init__(self, port, ip_address = None, name = 'Player'):
+    def __init__(self, port, ip_address=None, name='Player'):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((ip_address or socket.getfqdn(), port))
         print self.server.recv(2048)
@@ -23,9 +23,9 @@ class Client(object):
         self.player = self.receive()[0]
         assert type(self.player) == Player
         self.pile = Pile()
-        self.send("Give me the pile!")#Server needs to wait for the request
+        self.send("Give me the pile!")  # Server needs to wait for the request
         self.pile.add(self.receive()[0])
-        self.listener = threading.Thread(target = self.listen)
+        self.listener = threading.Thread(target=self.listen)
         self._connected = threading.Event()
         self.listener.start()
         self.message_queue = Queue.Queue()
@@ -49,7 +49,7 @@ class Client(object):
                 total += sent
         return total
 
-    def receive(self, timeout = 10, message = None):
+    def receive(self, timeout=10, message=None):
         """Get a response from the server and de-pickles it. If the actual
         message takes too long (longer than 10 seconds or timeout if given)
         then socket.error is raised"""
@@ -75,13 +75,13 @@ class Client(object):
         data = []
         data.append(first)
         if second:
-            data.extend(self.receive(timeout = 10, message = second))
+            data.extend(self.receive(timeout=10, message=second))
         return data
 
     def constantly_receive(self, queue):
         while self.is_running():
             try:
-                data = self.receive(timeout = 1)
+                data = self.receive(timeout=1)
                 for item in data:
                     queue.put(item)
             except socket.timeout:
@@ -96,7 +96,7 @@ class Client(object):
         if self.is_running():
             try:
                 print 'Closing connection!'
-                self.server.send('')#Closes connection
+                self.server.send('')  # Closes connection
             finally:
                 self._connected.set()
                 self.server.close()
@@ -104,36 +104,42 @@ class Client(object):
 
     def listen(self):
         message_queue = Queue.Queue()
-        get_message_thread = threading.Thread(name = (
-            'Getting messages from server'.format()), target = (
-            self.constantly_receive), args = (message_queue,))
+        get_message_thread = threading.Thread(name='Server listener thread',
+                                              target=self.constantly_receive,
+                                              args=(message_queue,))
         get_message_thread.start()
         try:
             while self.is_running():
                 try:
-                    data = message_queue.get(timeout = 1)
+                    data = message_queue.get(timeout=1)
                 except Queue.Empty:
                     continue
-                if type(data) == Card:
-                    card = data
-                    self.pile.add((card,))
-                    self.pile.update_top_card()
-                    self.pile_queue.put(card)
-                elif type(data) == tuple:
-                    if all((type(card) == Card for card in data)):
-                        for card in data:
-                            self.player.add_card(card)
-                            self.card_queue.put(card)
-                    elif all((type(player) == str for player in data)):
-                        self.players = data
-                    else:
-                        raise KeyError, (
-                        '{} was not all Cards or strings'.format(
-                        data), ' representing player names!')
-                elif type(data) == str:
-                    self.message_queue.put(data)
+                self.handle_data(data)
         except (socket.error, socket.timeout):
             self.disconnect()
+
+    def handle_data(self, data):
+        if type(data) == str:
+            self.message_queue.put(data)
+        elif type(data) == Card:
+            cards = [data]
+            self.pile.add(cards)
+            self.pile_queue.put(data)
+        elif type(data) == list:
+            if all(type(card) == Card for card in data):
+                for card in data:
+                    self.player.add_card(card)
+                    self.card_queue.put(card)
+            elif all(type(player) == str for player in data):
+                self.players = data
+            else:
+                raise(KeyError), (
+                    "{} was not type homogeneous (must be all cards or "
+                    "strings which represent player names)").format(data)
+        else:
+            raise(ValueError), (
+                "Data must be string, list, or card, not {}".format(
+                    type(data)))
 
     def __enter__(self):
         return self
