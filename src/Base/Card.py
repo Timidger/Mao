@@ -24,6 +24,14 @@ class Card(object):
         assert new_rank in RANKS
         self.rank = new_rank
 
+    @staticmethod
+    def is_similar(card, other_card):
+        ranks = (card.rank == other_card.rank
+                if other_card.rank and card.rank else True)
+        suits = (card.suit == other_card.suit
+                if other_card.suit and card.suit else True)
+        return suits or ranks
+
     def __nonzero__(self):
         return any((self.rank, self.suit))
 
