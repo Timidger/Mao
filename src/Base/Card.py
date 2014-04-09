@@ -14,15 +14,36 @@ class Card(object):
         self.suit = suit
         self.rank = rank
 
-    def change_suit(self, new_suit):
-        """Changes the suit of the card to the new suit"""
-        assert new_suit in SUITS
-        self.suit = new_suit
+    @property
+    def suit(self):
+        "String that represents the card's suit"
+        return self._suit
 
-    def change_rank(self, new_rank):
-        """Changes the rank of the card to the new rank"""
-        assert new_rank in RANKS
-        self.rank = new_rank
+    @suit.setter
+    def suit(self, value):
+        # Assert, value si not none, python 2????
+        assert(value in SUITS or value is None), (
+        "Suit should be in {}, was {}".format(SUITS, value))
+        self._suit = value
+
+    @suit.deleter
+    def suit(self):
+        self._suit = None
+
+    @property
+    def rank(self):
+        "String that represents the card's rank"
+        return self._rank
+
+    @rank.setter
+    def rank(self, value):
+        assert(value in RANKS or value is None), (
+        "Rank should be in {}, was {}".format(SUITS, value))
+        self._rank = value
+
+    @rank.deleter
+    def rank(self):
+        self._rank = None
 
     @staticmethod
     def is_similar(card, other_card):
@@ -32,11 +53,11 @@ class Card(object):
                  if other_card.suit and card.suit else True)
         return suits or ranks
 
-    def __nonzero__(self):
+    def __bool__(self):
         return any((self.rank, self.suit))
 
     def __eq__(self, other_card):
-        assert type(other_card) == Card
+        assert(type(other_card) == Card), "Can't compare card and non-card!"
         return (other_card.rank, other_card.suit) == (self.rank, self.suit)
 
     def __repr__(self):
@@ -44,3 +65,24 @@ class Card(object):
 
     def __str__(self):
         return "{} of {}".format(self.rank, self.suit)
+
+if __name__ == "__main__":
+    cards = [Card(suit, rank)
+            for suit in (SUITS + [None]) for rank in (RANKS + [None])]
+#    print(cards)
+    for card in cards:
+        if not card:
+            print(card)
+            assert(card.rank == None and card.suit == None), (
+                "Both rank and suit must be None!")
+        else:
+            assert(card), "Both suit and rank must be values!".format(card)
+    for rank in RANKS:
+        for suit in SUITS:
+            try:
+                Card(rank.lower(), suit.lower())
+            except AssertionError:
+                continue
+            else:
+                raise AssertionError(
+                    "Card can only accept proper ranks and suits")
