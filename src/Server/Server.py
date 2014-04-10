@@ -34,7 +34,10 @@ class Server(object):
         connection_thread.start()
         self.player_handler = player_handler
         self.rule_handler = rule_handler
-        self.deck = Pile.Pile()
+        suits = "Spades Hearts Diamonds Clubs".split()
+        ranks = "Ace 2 3 4 5 6 7 8 9 10 King Queen".split()
+        self.deck = (Pile.Pile([Card(suit, rank) for rank in
+                    ranks for suit in suits]))
         self.pile = Pile.Pile()
         self._main_event = threading.Event()
 
