@@ -58,14 +58,18 @@ if __name__ == "__main__":
         "{} must have 3 cards! Failed 'add_card' test".format(player))
 
     # "in" check works for both list and player objects
-    assert(card1 in player.hand)
-    assert(card1 in player)
+    assert(card1 in player.hand), "{} should be in the hand!".format(card1)
+    assert(card1 in player), '"in player" should == "in player.hand"'
 
     # Slice test
-    assert(player[0] == card1)
-    assert(player.get_card(0) == card1)
+    assert(player[0] == card1), "Player[0] should be == Player.hand[0]"
+    assert(player.get_card(0) == card1), (
+        "Player.get_card == Player.hand.pop(0)")
 
     assert(len(player.hand) == 2), "get_card needs to remove the card!"
+
+    # Player equality test (only tests name)
+    assert(player == Player("Timidger")), "Should only test name equality!"
 
     print("Player Representation: {}".format(player))
     print("Player Debug: {}".format(player.__repr__()))
