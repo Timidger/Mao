@@ -24,11 +24,11 @@ class Pile(object):
             self.cards[second], self.cards[first] = (self.cards[first],
                                                      self.cards[second])
 
-    def add(self, cards, index=0):
-        """Adds cards to the pile at the appropriate index, which is the
-        top card by default. Cards needs to be iterable"""
-        for card in cards:
-            self.cards.insert(index, card)
+    def add(self, card, index=0):
+        """Adds the card to the pile at the appropriate index, which is the
+        top card by default"""
+        assert(type(card) == Card)
+        self.cards.insert(index, card)
 
     def remove(self, index=0):
         """Removes and returns a card at the appropriate index"""
@@ -36,10 +36,10 @@ class Pile(object):
         return card
 
     def __getitem__(self, index):
-        if self.cards:
-            return self.cards[index]
-        else:
+        if not self.cards and not index:
             return Card(None, None)
+        else:
+            return self.cards[index]
 
     def __len__(self):
         return len(self.cards)
