@@ -102,5 +102,5 @@ if __name__ == "__main__":
     assert(Card.is_similar(card1, card1))
 
     # Shows the different ways cards are represented in the program
-    print("Card Representation string: {}".format(cards[0]))
-    print("Card Debug string: {}".format(cards[0].__repr__()))
+    print("Card Representation: {}".format(cards[0]))
+    print("Card Debug: {}".format(cards[0].__repr__()))
