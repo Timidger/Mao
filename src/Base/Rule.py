@@ -52,6 +52,5 @@ if __name__ == '__main__':
     warning = '\033[93m'
     end = '\033[0m'
     print(warning + "lambdas show up in debug prompts as {}, "
-           "use functions instead\033[0m".format(
-            lambda_rule.function.__name__) + end)
-
+          "use functions instead".format(
+              lambda_rule.function.__name__) + end)
