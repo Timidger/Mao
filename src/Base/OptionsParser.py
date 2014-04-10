@@ -5,7 +5,7 @@ Created on Tue Jul 30 00:18:59 2013
 @author: timidger
 """
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 
 def load_configuration(file_name):
