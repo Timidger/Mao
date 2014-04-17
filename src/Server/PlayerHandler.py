@@ -41,7 +41,7 @@ class PlayerHandler(object):
         # If players % value == 0, then not everybody will play once per round
         if not self.players:
             self._order = 1
-        if value % len(self.players) != 0:
+        elif value % len(self.players) != 0:
             self._order = value
         else:
             self._order = 1
@@ -146,3 +146,5 @@ if __name__ == "__main__":
     play(4)
     print(PH)
     play(4, [order for order in range(1, 100)])
+    for player in PH.players:
+        PH.remove_player(player)
