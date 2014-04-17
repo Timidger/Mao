@@ -17,48 +17,48 @@ class PlayerHandler(object):
         else:
             self.players = list(players)
         self.current_player = None
-        if self.players:
-            self.next_player()
+        self.next_player()
         self.order = order
 
-    def get_current_player(self):
-        """Returns the current player's name or None if there is no current
-        player"""
-        try:
-            return self.current_player.name
-        except AttributeError:
-            return None
+    @property
+    def current_player(self):
+        return self._current_player
 
-    def get_player_distance(self, index):
-        """Returns the 'distance' between the current player and the given
-        index. Takes either a player instance or an int index as an index
-        """
-        if type(index) == int:
-            return abs(self.players.index(self.current_player) - index)
-        else:
-            return abs(self.players.index(self.current_player) - (
-                self.players.index(index)))
+    @current_player.setter
+    def current_player(self, value):
+        assert(value in self.players or value is None), (
+            "{} not in players!".format(value))
+        self._current_player = value
 
-    def update_order(self):
-        """If order is configured to be unfair (i.e: not every player will
-        play in a given round), then the order reverts to one"""
-        if len(self.plapers) % self.order != 0 and self.order != 1:
-            self.order = 1
+    @property
+    def order(self):
+        return self._order
+
+    @order.setter
+    def order(self, value):
+        value = int(value)
+        assert(value > 0), "order must be a positive number!"
+        # If players % value == 0, then not everybody will play once per round
+        if not self.players:
+            self._order = 1
+        if value % len(self.players) != 0:
+            self._order = value
         else:
-            pass
+            self._order = 1
 
     def add_player(self, player):
         """Adds the player to players and deals him a new hand"""
         if player not in self.players:
             self.players.append(player)
+        else:
+            raise PlayerError("{} already in players!".format(player))
 
     def remove_player(self, player):
         """Removes the player from players, essentially deleting him"""
-        if player is self.current_player:
-            self.next_player()
-        self.players.remove(player)
-        if not self.players:
-            self.current_player = None
+        if player in self.players:
+            self.players.remove(player)
+        else:
+            raise PlayerError("{} not in players!".format(player))
 
     def get_player(self, interval):
         """Returns the player based on the interval and the current order.
@@ -67,7 +67,7 @@ class PlayerHandler(object):
         as an interval of 1 with an interval of 2. A negative number goes in
         the reverse direction, so interval as -2 would be the 2nd to last
         player who would have played BASED ON THE CURRENT ORDER"""
-        assert type(interval) == int
+        assert type(interval) == int, "Key must be an integer!"
         if not interval and self.players:
             return self.current_player
         elif self.players:
@@ -88,4 +88,61 @@ class PlayerHandler(object):
                 self.current_player = self.players[0]
             else:
                 self.current_player = None
-        self.current_player = self.get_player(1)
+        else:
+            self.current_player = self.get_player(1)
+
+    def __getitem__(self, key):
+        """Instead of directly accessing the player list, this uses the
+        get_player function, which takes into account order and the current
+        player"""
+        return self.get_player(key)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.next_player()
+        return self.current_player
+
+    def __repr__(self):
+        return "Playerhandler with {} players and an order of {}".format(
+            len(self.players), self.order)
+
+
+class PlayerError(Exception):
+    pass
+
+if __name__ == "__main__":
+    from random import choice
+
+    def play(stop, orders=None):
+        for turn, player in enumerate(PH):
+            print("{}: {}\t{}".format(turn, player, PH.order))
+            if turn == stop:
+                break
+            # Can change orders halfway through
+            if orders:
+                PH.order = choice(orders)
+
+    PH = PlayerHandler()
+    try:
+        PH.order = 0
+        raise AssertionError("Order can't be set to 0!")
+    except AssertionError:
+        pass
+    assert not PH.players, "There shouldn't be any players!"
+    assert not PH.current_player, "No players == current_player == None!"
+
+    players = ["Preston", "Harry", "Gerald", "Aristotle"]
+    for player in players:
+        PH.add_player(player)
+    assert PH.players, "There should be players now!"
+    assert len(PH.players) == 4, "There should be 4 players now!"
+    play(4)
+    print("-"*69)
+    PH.order = 3
+    assert(PH.order == 3), (
+        "Order should be 3, order of 3 is good for an even number of players!")
+    play(4)
+    print(PH)
+    play(4, [order for order in range(1, 100)])
