@@ -79,7 +79,7 @@ class PlayerHandler(object):
                 index += len(self.players)
             return self.players[index]
         else:
-            raise KeyError("No players in the list!")
+            raise PlayerError("No players in the list!")
 
     def next_player(self):
         """Sets the current player to the next player to play"""
@@ -101,8 +101,11 @@ class PlayerHandler(object):
         return self
 
     def __next__(self):
-        self.next_player()
-        return self.current_player
+        try:
+            self.next_player()
+            return self.current_player
+        except PlayerError as e:
+            raise StopIteration
 
     def __repr__(self):
         return "Playerhandler with {} players and an order of {}".format(
@@ -146,5 +149,5 @@ if __name__ == "__main__":
     play(4)
     print(PH)
     play(4, [order for order in range(1, 100)])
-    for player in PH.players:
+    for player in PH.players.copy():
         PH.remove_player(player)
