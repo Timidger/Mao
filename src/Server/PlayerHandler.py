@@ -39,9 +39,7 @@ class PlayerHandler(object):
         value = int(value)
         assert(value > 0), "order must be a positive number!"
         # If players % value == 0, then not everybody will play once per round
-        if not self.players:
-            self._order = 1
-        elif value % len(self.players) != 0:
+        if value % (len(self.players) or 1) > 0:
             self._order = value
         else:
             self._order = 1
