@@ -4,8 +4,10 @@ Created on Fri Dec 28 13:12:58 2012
 
 @author: Preston
 """
-SUITS = "Hearts Clubs Spades Diamonds".split()
-RANKS = "Ace 2 3 4 5 6 7 8 9 10 Jack Queen King".split()
+SUITS = ("Hearts", "Clubs", "Spades", "Diamonds")
+RANKS = ("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+         "Jack", "Queen", "King")
+WILD_CARD = "*"
 
 
 class Card(object):
@@ -21,8 +23,9 @@ class Card(object):
 
     @suit.setter
     def suit(self, value):
-        assert(value in SUITS or value is None), (
-            "Suit should be in {}, was {}".format(SUITS, value))
+        assert(value in SUITS or value == WILD_CARD), (
+            "Suit should be in {}, was {}".format(
+                SUITS + (WILD_CARD,), value))
         self._suit = value
 
     @suit.deleter
@@ -36,8 +39,9 @@ class Card(object):
 
     @rank.setter
     def rank(self, value):
-        assert(value in RANKS or value is None), (
-            "Rank should be in {}, was {}".format(SUITS, value))
+        assert(value in RANKS or value == WILD_CARD), (
+            "Rank should be in {}, was {}".format(
+                SUITS + (WILD_CARD,), value))
         self._rank = value
 
     @rank.deleter
@@ -57,11 +61,14 @@ class Card(object):
 
     def __eq__(self, other_card):
         assert(type(other_card) == Card), "Can't compare card and non-card!"
-        return (other_card.rank, other_card.suit) == (self.rank, self.suit)
+        ranks = (self.rank, other_card.rank)
+        suits = (self.suit, other_card.suit)
+        ranks_equal = WILD_CARD in ranks or ranks[0] == ranks[1]
+        suits_equal = WILD_CARD in suits or suits[0] == suits[1]
+        return ranks_equal and suits_equal
 
     def __nq__(self, other_card):
-        assert(type(other_card) == Card), "Can't compare card and non-card!"
-        return (other_card.rank, other_card.suit) != (self.rank, self.suit)
+        return not self.__eq__(other_card)
 
     def __repr__(self):
         return "Card with rank {} and suit {}".format(self.rank, self.suit)
@@ -71,12 +78,13 @@ class Card(object):
 
 if __name__ == "__main__":
     cards = [Card(suit, rank)
-             for suit in (SUITS + [None]) for rank in (RANKS + [None])]
+             for suit in (SUITS + (WILD_CARD,))
+             for rank in (RANKS + (WILD_CARD,))]
     for card in cards:
         # Tests not bool-ness
         if not card:
-            assert(card.rank is None and card.suit is None), (
-                "Both rank and suit must be None!")
+            assert(card.rank == WILD_CARD and card.suit == WILD_CARD), (
+                "Both rank and suit must be {}!".format(WILD_CARD))
         # Tests bool-ness
         else:
             assert(card), "Both suit and rank must be values!".format(card)
@@ -94,6 +102,12 @@ if __name__ == "__main__":
     card1, card2 = Card("Hearts", "5"), Card("Hearts", "6")
     assert(not (card1 == card2) == (card1 != card2)), (
         "Equality checking should work only for cards exactly the same")
+
+    assert (card1 == Card(WILD_CARD, "5")), (
+        "{} should act as a wildcard".format(WILD_CARD))
+
+    assert(card2 == Card(WILD_CARD, "6")), (
+        "{} should act as a wildcard".format(WILD_CARD))
 
     # Tests is_similar method for like ranks and suits
     assert(Card.is_similar(card1, card2)), "Must accept same ranks!"
