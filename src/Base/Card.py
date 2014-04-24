@@ -41,7 +41,7 @@ class Card(object):
     def rank(self, value):
         assert(value in RANKS or value == WILD_CARD), (
             "Rank should be in {}, was {}".format(
-                SUITS + (WILD_CARD,), value))
+                RANKS + (WILD_CARD,), value))
         self._rank = value
 
     @rank.deleter
