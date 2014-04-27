@@ -9,16 +9,30 @@ import Tkinter
 import Queue
 import threading
 from collections import OrderedDict
-from ..Base import Card
+from ..Base.Card import Card
 from ..Client.Client import Client
-from ..Base import config_parser
+from ..Base import OptionsParser
 
 
-class Hand(Tkinter.Frame, object):
+class Hand(Tkinter.Canvas, object):
     def __init__(self, master, Client):
         super(Hand, self).__init__(master)
-        self.pack(fill = 'both', expand = True)
-        self.grid()
+        #self.pack(fill = 'both', expand = True)
+        self.frame = Tkinter.Frame(self)
+        # Vertical Scroll bar setup
+        self.vsb = Tkinter.Scrollbar(self, orient="horizontal",
+                                     command=self.xview)
+        self.configure(xscrollcommand=self.vsb.set)
+        self.vsb.grid(row=1)
+        self.grid(sticky="WE")
+        self._frame_id = self.create_window((4,4), window=self.frame,
+                                            anchor="sw", tags="self.frame")
+        self.frame.bind("<Configure>", self.OnFrameConfigure)
+        self.frame.grid(sticky="WE", row=0, in_=self)
+        #self.grid_propagate(False)
+        self.frame.grid_propagate(False)
+
+
         self.cards = OrderedDict() # {Card: Button}
         self.Client = Client
         self._send_lock = threading.Lock()
@@ -35,12 +49,12 @@ class Hand(Tkinter.Frame, object):
         self.update_hand()
 
     def add_to_hand(self, card):
-        assert type(card) == Card
+        assert type(card) == Card, (
+        "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
-        button = Tkinter.Button(self)
+        button = Tkinter.Button(self.frame)
         button.config(relief = 'flat',
-                      command = lambda card = card:
-                          self.send_card(card),
+                      command = lambda card=card: self.send_card(card),
                       text = card.rank + ' of ' + card.suit)
         self.cards.update({card: button})
         self._send_lock.release()
@@ -62,8 +76,8 @@ class Hand(Tkinter.Frame, object):
     def listen(self):
         while self.Client.is_running():
             try:
-                self.add_to_hand(self.Client.card_queue.get(timeout = 1))
-                self.Client.card_queue.queue
+                card = self.Client.card_queue.get(timeout=1)
+                self.add_to_hand(card)
                 self.update_hand()
             except Queue.Empty:
                 continue
@@ -75,6 +89,12 @@ class Hand(Tkinter.Frame, object):
     def __repr__(self):
         return "GUI representation of the hand for {}".format(
         self.Client.player)
+
+    #No Idea if I need this
+    def OnFrameConfigure(self, event):
+        """Reset the scroll region to encompass the inner frame"""
+        self.itemconfig(self._frame_id, height=event.height, width=event.width)
+        #self.configure(scrollregion=self.bbox("all"))
 
 if __name__ == '__main__':
     from Pile import Pile

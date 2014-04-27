@@ -8,20 +8,25 @@ Created on Mon Sep 16 08:07:15 2013
 import Tkinter
 from threading import Thread
 from ..Client.Client import Client
-from ..Base import Deck
-from . import Stack
-from . import Hand
-from . import Chat
+from ..Base.Pile import Pile
+from .Deck import Deck
+from .Stack import Stack
+from .Hand import Hand
+from .Chat import Chat
 
 
 class Display(Tkinter.Frame, object):
-    def __init__(self, master):
+    def __init__(self, master, client=None):
         super(Display, self).__init__(master)
-        self.start_screen()
+        if not client:
+            self.start_screen()
+        else:
+            self.client = client
+            self.start_game()
 
     def start_screen(self):
         self.start_frame = Tkinter.Frame(self.master)
-        self.ip_box = Tkinter.Entry(self.start_frame, text="hey")
+        self.ip_box = Tkinter.Entry(self.start_frame)
         self.port_box = Tkinter.Entry(self.start_frame)
         self.name_box = Tkinter.Entry(self.start_frame)
         start_button = Tkinter.Button(self.start_frame)
@@ -32,11 +37,10 @@ class Display(Tkinter.Frame, object):
         self.port_box.grid()
         self.name_box.grid()
         start_button.grid()
-
-    def start_game(self):
         self.client = Client(int(self.port_box.get()), self.ip_box.get(),
                         self.name_box.get())
         self.start_frame.destroy()
+    def start_game(self):
         self.deck = Deck(self.master, self.client)
         self.pile = Stack(self.master, self.client)
         self.hand = Hand(self.master, self.client)

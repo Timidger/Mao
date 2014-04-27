@@ -132,6 +132,10 @@ class Client(object):
                         data), ' representing player names!')
                 elif type(data) == str:
                     self.message_queue.put(data)
+                else:
+                    raise NotImplementedError, (
+                    "Did not receive a recognizable data type "
+                    "(got {})".format(type(data)))
         except (socket.error, socket.timeout):
             self.disconnect()
 

@@ -221,6 +221,7 @@ class Server(object):
             player = self.player_hander.get_player(player)
         if player in self.player_handler.players:
             cards += self.draw(penalty_num)
+            cards = tuple(cards)
             Server.send(cards, self.get_client(player))
             for card in cards:
                 player.add_card(card)
@@ -342,7 +343,7 @@ class Server(object):
                     if not data.rank and not data.suit:
                         data = None
                     else:
-                        data = (data,)
+                        data = [data]
                     self.punish(player, cards = data, reason = (
                     "for not playing a valid card"))
             elif not data.rank and not data.suit:
