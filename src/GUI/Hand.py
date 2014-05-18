@@ -29,7 +29,8 @@ class Hand(Tkinter.Canvas, object):
         self.frame.grid(row=1, column=1, sticky="nsew")
         self.vsb.grid(row=2, column=1, sticky="ew")
         self.grid(row=1, column=1, sticky="nsew")
-        self.create_window((4, -10), window=self.frame, tags="self.frame", anchor="nw")
+        self.create_window((4, -10), window=self.frame, tags="self.frame",
+                           anchor="nw")
         # Binds it so it can't scroll beyond the boundaries
         self.frame.bind("<Configure>", self.OnFrameConfigure)
 
@@ -42,7 +43,7 @@ class Hand(Tkinter.Canvas, object):
         self.listen)).start()
 
     def create_widgets(self):
-        for index, card in enumerate(self.Client.player.hand):
+        for card in self.Client.player.hand:
             self.add_to_hand(card)
         self.update_hand()
 
@@ -58,8 +59,10 @@ class Hand(Tkinter.Canvas, object):
         self._send_lock.release()
 
     def update_hand(self):
-        for index, button in enumerate(self.cards.values()):
-            #row = (index / 7) + 1
+        # So that the new card is added to the beginning.
+        # Quick hack that needs to be addressed with a new data structure
+        reversed_hand = reversed(self.cards.values())
+        for index, button in enumerate(reversed_hand):
             column = index
             button.grid(column=column, row=0)
 
@@ -88,7 +91,7 @@ class Hand(Tkinter.Canvas, object):
         return "GUI representation of the hand for {}".format(
         self.Client.player)
 
-    #No Idea if I need this
+    # Makes sure you can't just keep scrolling
     def OnFrameConfigure(self, event):
         """Reset the scroll region to encompass the inner frame"""
         self.configure(scrollregion=self.bbox("all"))
