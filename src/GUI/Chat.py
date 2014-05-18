@@ -33,7 +33,6 @@ class Chat(Tkinter.Frame, object):
         """Master needs to be a Tk instance, and client needs to be an
         Client instance"""
         super(Chat, self).__init__(master)
-        #self.pack(fill = 'both', expand = True)
         self.grid()
         self.create_widgets()
         master.grid_propagate(True)
