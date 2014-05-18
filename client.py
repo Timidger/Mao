@@ -73,6 +73,8 @@ try:
     root = Tkinter.Tk()
     root.wm_title("Mao: Version 1.0")
     main = Display(root, client)
+    root.geometry("950x410+10+10")
+    root.resizable(width=False, height=False)
     root.mainloop()
 finally:
     client.disconnect()
