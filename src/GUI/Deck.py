@@ -5,14 +5,14 @@ Created on Sun Sep 15 23:01:34 2013
 @author: timidger
 """
 import Tkinter
-from ..Base import Card
+from ..Base.Card import Card
 
 
 class Deck(Tkinter.Frame, object):
     def __init__(self, master, Client):
         super(Deck, self).__init__(master)
         self.Client = Client
-        self.pack(fill = 'both', expand = True)
+        #self.pack(fill = 'both', expand = True)
         self.grid()
         self.deck = Tkinter.Button(self)
         self.deck.config(relief = 'flat',

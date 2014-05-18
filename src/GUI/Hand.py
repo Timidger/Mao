@@ -9,23 +9,35 @@ import Tkinter
 import Queue
 import threading
 from collections import OrderedDict
-from ..Base import Card
+from ..Base.Card import Card
 from ..Client.Client import Client
-from ..Base import config_parser
+from ..Base import OptionsParser
 
 
-class Hand(Tkinter.Frame, object):
+class Hand(Tkinter.Canvas, object):
     def __init__(self, master, Client):
         super(Hand, self).__init__(master)
-        self.pack(fill = 'both', expand = True)
-        self.grid()
+        #self.pack(fill = 'both', expand = True)
+        self.frame = Tkinter.Frame(self)
+        # Make the scroll bar go across the entire frame
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        # Horizontal Scroll bar setup
+        self.vsb = Tkinter.Scrollbar(self, orient="horizontal",
+                                     command=self.xview)
+        self.configure(xscrollcommand=self.vsb.set)
+        self.frame.grid(row=1, column=1, sticky="nsew")
+        self.vsb.grid(row=2, column=1, sticky="ew")
+        self.grid(row=1, column=1, sticky="nsew")
+        self.create_window((4, -10), window=self.frame, tags="self.frame", anchor="nw")
+        # Binds it so it can't scroll beyond the boundaries
+        self.frame.bind("<Configure>", self.OnFrameConfigure)
+
+
         self.cards = OrderedDict() # {Card: Button}
         self.Client = Client
         self._send_lock = threading.Lock()
         self.create_widgets()
-        master.grid_propagate(True)
-        master.grid_rowconfigure(0, weight = 1)
-        master.grid_columnconfigure(0, weight = 1)
         threading.Thread(name = 'Listening for cards', target = (
         self.listen)).start()
 
@@ -35,21 +47,21 @@ class Hand(Tkinter.Frame, object):
         self.update_hand()
 
     def add_to_hand(self, card):
-        assert type(card) == Card
+        assert type(card) == Card, (
+        "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
-        button = Tkinter.Button(self)
+        button = Tkinter.Button(self.frame)
         button.config(relief = 'flat',
-                      command = lambda card = card:
-                          self.send_card(card),
+                      command = lambda card=card: self.send_card(card),
                       text = card.rank + ' of ' + card.suit)
         self.cards.update({card: button})
         self._send_lock.release()
 
     def update_hand(self):
         for index, button in enumerate(self.cards.values()):
-            row = (index / 7) + 1
-            column = index % 7
-            button.grid(column = column, row = row)
+            #row = (index / 7) + 1
+            column = index
+            button.grid(column=column, row=0)
 
     def send_card(self, card):
         self.cards.pop(card).destroy()
@@ -62,8 +74,8 @@ class Hand(Tkinter.Frame, object):
     def listen(self):
         while self.Client.is_running():
             try:
-                self.add_to_hand(self.Client.card_queue.get(timeout = 1))
-                self.Client.card_queue.queue
+                card = self.Client.card_queue.get(timeout=1)
+                self.add_to_hand(card)
                 self.update_hand()
             except Queue.Empty:
                 continue
@@ -75,6 +87,11 @@ class Hand(Tkinter.Frame, object):
     def __repr__(self):
         return "GUI representation of the hand for {}".format(
         self.Client.player)
+
+    #No Idea if I need this
+    def OnFrameConfigure(self, event):
+        """Reset the scroll region to encompass the inner frame"""
+        self.configure(scrollregion=self.bbox("all"))
 
 if __name__ == '__main__':
     from Pile import Pile
