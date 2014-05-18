@@ -19,27 +19,25 @@ class Hand(Tkinter.Canvas, object):
         super(Hand, self).__init__(master)
         #self.pack(fill = 'both', expand = True)
         self.frame = Tkinter.Frame(self)
-        # Vertical Scroll bar setup
+        # Make the scroll bar go across the entire frame
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        # Horizontal Scroll bar setup
         self.vsb = Tkinter.Scrollbar(self, orient="horizontal",
                                      command=self.xview)
         self.configure(xscrollcommand=self.vsb.set)
-        self.vsb.grid(row=1)
-        self.grid(sticky="WE")
-        self._frame_id = self.create_window((4,4), window=self.frame,
-                                            anchor="sw", tags="self.frame")
+        self.frame.grid(row=1, column=1, sticky="nsew")
+        self.vsb.grid(row=2, column=1, sticky="ew")
+        self.grid(row=1, column=1, sticky="nsew")
+        self.create_window((4, -10), window=self.frame, tags="self.frame", anchor="nw")
+        # Binds it so it can't scroll beyond the boundaries
         self.frame.bind("<Configure>", self.OnFrameConfigure)
-        self.frame.grid(sticky="WE", row=0, in_=self)
-        #self.grid_propagate(False)
-        self.frame.grid_propagate(False)
 
 
         self.cards = OrderedDict() # {Card: Button}
         self.Client = Client
         self._send_lock = threading.Lock()
         self.create_widgets()
-        master.grid_propagate(True)
-        master.grid_rowconfigure(0, weight = 1)
-        master.grid_columnconfigure(0, weight = 1)
         threading.Thread(name = 'Listening for cards', target = (
         self.listen)).start()
 
@@ -61,9 +59,9 @@ class Hand(Tkinter.Canvas, object):
 
     def update_hand(self):
         for index, button in enumerate(self.cards.values()):
-            row = (index / 7) + 1
-            column = index % 7
-            button.grid(column = column, row = row)
+            #row = (index / 7) + 1
+            column = index
+            button.grid(column=column, row=0)
 
     def send_card(self, card):
         self.cards.pop(card).destroy()
@@ -93,8 +91,7 @@ class Hand(Tkinter.Canvas, object):
     #No Idea if I need this
     def OnFrameConfigure(self, event):
         """Reset the scroll region to encompass the inner frame"""
-        self.itemconfig(self._frame_id, height=event.height, width=event.width)
-        #self.configure(scrollregion=self.bbox("all"))
+        self.configure(scrollregion=self.bbox("all"))
 
 if __name__ == '__main__':
     from Pile import Pile
