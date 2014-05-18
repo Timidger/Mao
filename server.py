@@ -40,6 +40,3 @@ def kick(player_name):
         raise KeyError, 'No player named "{}"!'.format(player_name)
 
 atexit.register(server.shutdown)
-
-def test():
-    deck.remove(53)
