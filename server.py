@@ -32,6 +32,13 @@ def uptime():
     print "The server has been running for {} seconds".format(
     int(time.time() - start_time))
 
+def kick(player_name):
+    for player in players:
+        if player.name == player_name:
+            server.disconnect(server.get_client(player))
+    else:
+        raise KeyError, 'No player named "{}"!'.format(player_name)
+
 atexit.register(server.shutdown)
 
 def test():
