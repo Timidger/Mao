@@ -12,7 +12,6 @@ class Deck(Tkinter.Frame, object):
     def __init__(self, master, Client):
         super(Deck, self).__init__(master)
         self.Client = Client
-        #self.pack(fill = 'both', expand = True)
         self.grid()
         self.deck = Tkinter.Button(self)
         self.deck.config(relief = 'flat',
