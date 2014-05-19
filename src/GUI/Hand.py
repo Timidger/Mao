@@ -12,6 +12,8 @@ from collections import OrderedDict
 from ..Base.Card import Card
 from ..Client.Client import Client
 from ..Base import OptionsParser
+from .CardImage import CardImage
+from PIL import ImageTk
 
 
 class Hand(Tkinter.Canvas, object):
@@ -51,9 +53,11 @@ class Hand(Tkinter.Canvas, object):
         "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
         button = Tkinter.Button(self.frame)
+        card_image = ImageTk.PhotoImage(CardImage(card).file)
+        card.card_image = card_image
         button.config(relief = 'flat',
                       command = lambda card=card: self.send_card(card),
-                      text = card.rank + ' of ' + card.suit)
+                      image=card.card_image)
         self.cards.update({card: button})
         self._send_lock.release()
 
