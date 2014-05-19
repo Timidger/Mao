@@ -9,13 +9,16 @@ RANK_SIZE = (20, 20) # Size of the chunk that denotes a card's rank (x, y)
 TOP_CORDS = (3, 8, 23, 28) # Chunk above the top suit symbol
 BOTTOM_CORDS = (120, 173, 140, 193) # Chunk below the bottom suit symbol
 
-class CardImage(object):
+class CardImage(Tkinter.Button, object):
     """Image representation of a card"""
-    def __init__(self, card):
+    def __init__(self, master, card):
+        """master is the root Tk window, card is the card that will be
+        displayed  by the program"""
+        super(CardImage, self).__init__(master)
         self.card = card
         rank, suit = card.rank, card.suit
         image_file = self.make_card_image(card.rank, card.suit)
-        self.file = image_file
+        self.image = ImageTk.PhotoImage(image_file)
 
     def make_card_image(self, rank, suit):
         """Using the basic images that make up a card found in the image

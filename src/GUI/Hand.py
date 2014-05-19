@@ -52,17 +52,15 @@ class Hand(Tkinter.Canvas, object):
         assert type(card) == Card, (
         "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
-        button = Tkinter.Button(self.frame)
-        card_image = ImageTk.PhotoImage(CardImage(card).file)
-        card.card_image = card_image
-        button.config(relief = 'flat',
-                      command = lambda card=card: self.send_card(card),
-                      image=card.card_image)
-        self.cards.update({card: button})
+        card = CardImage(self.frame,card)
+        card.config(relief = 'flat',
+                      command = lambda card=card: self.send_card(card.card),
+                      image=card.image)
+        self.cards.update({card.card: card})
         self._send_lock.release()
 
     def update_hand(self):
-        for index, button in enumerate(self.cards.values()):
+        for index, button in enumerate(self.cards.values()[::-1]):
             #row = (index / 7) + 1
             column = index
             button.grid(column=column, row=0)
