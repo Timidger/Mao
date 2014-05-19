@@ -24,7 +24,7 @@ class Card(object):
         rank_chunk = Image.open(image_directory + "Ranks/" + rank + IMAGE_EXT)
         print "Card: {}".format(blank_card)
         print "chunk: {}".format(rank_chunk)
-        blank_card.paste(rank_chunk, TOP_CORDS)
+        blank_card.paste(rank_chunk, TOP_CORDS, rank_chunk.convert("RGBA"))
         # Still need bottom cords
         blank_card.show() # Debug
         return blank_card
