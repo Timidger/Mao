@@ -251,7 +251,7 @@ class Server(object):
                 self.deck.add(new_deck.cards)
                 self.deck.shuffle()
             cards.append(self.deck.remove())
-        return cards
+        return tuple(cards) # They expect a tuple for some reason
 
     def main_loop(self, timer = None, penalty_num = None):
         """Main loop that should be called after initalisation. timer is the
@@ -347,8 +347,12 @@ class Server(object):
                     self.punish(player, cards = data, reason = (
                     "for not playing a valid card"))
             elif not data.rank and not data.suit:
+                # They are drawing a card
                 self._main_event.set()
-                self.punish(player)#They draw a card
+                cards = self.draw(1)
+                Server.send(cards, self.get_client(player))
+                player.add_card(cards[0])
+                self.send_all("{} drew a card".format(player.name))
             else:
                 self._main_event.set()
                 self.send_all(
