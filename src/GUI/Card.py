@@ -6,7 +6,7 @@ image_directory = "Images/Cards/"
 IMAGE_EXT = ".gif"
 RANK_SIZE = (20, 20) # Size of the chunk that denotes a card's rank (x, y)
 TOP_CORDS = (3, 8, 23, 28) # Chunk above the top suit symbol
-BOTTOM_CORDS = ((128, 173), (128, 193)) # Chunk belove the bottom suit symbol
+BOTTOM_CORDS = (120, 173, 140, 193) # Chunk belove the bottom suit symbol
 
 class Card(object):
     """Image representation of a card"""
@@ -25,7 +25,9 @@ class Card(object):
         print "Card: {}".format(blank_card)
         print "chunk: {}".format(rank_chunk)
         blank_card.paste(rank_chunk, TOP_CORDS, rank_chunk.convert("RGBA"))
-        # Still need bottom cords
+        # Flip the rank image
+        rank_chunk = rank_chunk.rotate(180)
+        blank_card.paste(rank_chunk, BOTTOM_CORDS, rank_chunk.convert("RGBA"))
         blank_card.show() # Debug
         return blank_card
 
