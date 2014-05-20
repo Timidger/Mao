@@ -31,6 +31,8 @@ class CardImage(Tkinter.Button, object):
             # Generate a blank card(Clubs has a black border)
             image_file = self.get_blank_card("Clubs")
         self.image = ImageTk.PhotoImage(image_file)
+        back_image = self.get_back_image()
+        self.back_image = ImageTk.PhotoImage(back_image)
         self.config(relief='flat', image=self.image)
 
     @staticmethod
@@ -91,6 +93,11 @@ class CardImage(Tkinter.Button, object):
         # Add the symbol to the bottom of the card
         self.add_symbol(card, suit_symbol, SUIT_BOTTOM_CORDS)
         return card
+
+    @staticmethod
+    def get_back_image():
+        path = image_directory + "back" + IMAGE_EXT
+        return Image.open(path)
 
     def __repr__(self):
         path = os.path.abspath(self.image.name)

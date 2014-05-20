@@ -6,6 +6,7 @@ Created on Sun Sep 15 23:01:34 2013
 """
 import Tkinter
 from ..Base.Card import Card
+from CardImage import CardImage
 
 
 class Deck(Tkinter.Frame, object):
@@ -14,10 +15,12 @@ class Deck(Tkinter.Frame, object):
         self.Client = Client
         self.grid()
         self.deck = Tkinter.Button(self)
+        blank_card = Card(None, None)
+        self.image = CardImage(self, blank_card).back_image
         self.deck.config(relief = 'flat',
                          command = lambda: self.Client.send(Card(None, None
                          )),
-                         text = '<Insert Fancy Design Here>')
+                         image=self.image)
         self.deck.grid()
 
     def destroy(self):
