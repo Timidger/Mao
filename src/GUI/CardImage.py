@@ -2,12 +2,12 @@ import os
 from PIL import Image, ImageTk
 import Tkinter
 
-# Put this in the config
+# Default card size: 145x205
 image_directory = "Images/Cards/"
 IMAGE_EXT = ".gif"
 RANK_SIZE = (20, 20) # Size of the chunk that denotes a card's rank (x, y)
 TOP_CORDS = (3, 8, 23, 28) # Chunk above the top suit symbol
-BOTTOM_CORDS = (120, 173, 140, 193) # Chunk below the bottom suit symbol
+BOTTOM_CORDS = (120, 177, 140, 197) # Chunk below the bottom suit symbol
 
 class CardImage(Tkinter.Button, object):
     """Image representation of a card"""
