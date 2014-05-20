@@ -43,9 +43,9 @@ class CardImage(Tkinter.Button, object):
         red or black borders"""
         card = image_directory + "blank_card_{}" + IMAGE_EXT
         if card_suit in ("Hearts", "Diamonds"):
-            return Image.open(card.format("black"))
-        elif card_suit in ("Clubs", "Spades"):
             return Image.open(card.format("red"))
+        elif card_suit in ("Clubs", "Spades"):
+            return Image.open(card.format("black"))
         else:
             raise ValueError, (
                 "card_suit must one of these: {}, was {}".format(
