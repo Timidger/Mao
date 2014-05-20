@@ -13,7 +13,6 @@ from ..Base.Card import Card
 from ..Client.Client import Client
 from ..Base import OptionsParser
 from .CardImage import CardImage
-from PIL import ImageTk
 
 
 class Hand(Tkinter.Canvas, object):
@@ -53,9 +52,7 @@ class Hand(Tkinter.Canvas, object):
         "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
         card = CardImage(self.frame,card)
-        card.config(relief = 'flat',
-                      command = lambda card=card: self.send_card(card.card),
-                      image=card.image)
+        card.config(command=lambda card=card: self.send_card(card.card))
         self.cards.update({card.card: card})
         self._send_lock.release()
 

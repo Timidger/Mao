@@ -9,35 +9,28 @@ import Tkinter
 import Queue
 import threading
 from ..Client.Client import Client
+from .CardImage import CardImage
 
 
 class Stack(Tkinter.Frame, object):
     def __init__(self, master, Client):
         super(Stack, self).__init__(master)
         self.Client = Client
-        self.create_widgets()
+        self.update_top_card()
         self.listener = threading.Thread(name = 'Listening for pile updates',
                                 target = self.update_display)
         self.listener.start()
 
-    def create_widgets(self):
-        self.top_card = Tkinter.Button(self,
-                                       relief = 'flat',
-                                       text = (
-                                       (self.Client.pile.top_card.rank or (
-                                       'Essence')) + ' of ' + (
-                                       self.Client.pile.top_card.suit or(
-                                       'Nothing!'))))
+    def update_top_card(self):
+        self.top_card = CardImage(self, self.Client.pile.top_card)
         self.top_card.grid()
 
     def update_display(self):
         while self.Client.is_running():
             try:
                 self.Client.pile_queue.get(timeout = 1)
-                self.top_card.config(
-                text = (self.Client.pile.top_card.rank or 'Essense') + (
-                ' of ' + self.Client.pile.top_card.suit or 'Nothing'))
-                self.top_card.grid()
+                self.top_card.destroy()
+                self.update_top_card()
             except Queue.Empty:
                 continue
 

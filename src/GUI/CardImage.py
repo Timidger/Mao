@@ -24,21 +24,30 @@ class CardImage(Tkinter.Button, object):
         super(CardImage, self).__init__(master)
         self.card = card
         rank, suit = card.rank, card.suit
-        image_file = self.make_card_image(card.rank, card.suit)
+        if rank and suit:
+            # Generate a card image
+            image_file = self.make_card_image(card.rank, card.suit)
+        else:
+            # Generate a blank card(Clubs has a black border)
+            image_file = self.get_blank_card("Clubs")
         self.image = ImageTk.PhotoImage(image_file)
+        self.config(relief='flat', image=self.image)
 
-    def get_suit_symbol(self, suit):
+    @staticmethod
+    def get_suit_symbol(suit):
         """Gets the suit symbol from the image directory"""
         # Chop of the last letter, because otherwise the suit is plural
         path = (image_directory + "Suits/{}" + IMAGE_EXT).format(suit[:-1])
         return Image.open(path)
 
-    def get_rank_symbol(self, rank):
+    @staticmethod
+    def get_rank_symbol(rank):
         """Gets the rank symbol from the image directory"""
         path = (image_directory + "Ranks/{}" + IMAGE_EXT).format(rank)
         return Image.open(path)
 
-    def get_blank_card(self, card_suit):
+    @staticmethod
+    def get_blank_card(card_suit):
         """Depending on the type of the suit, returns a card image with either
         red or black borders"""
         card = image_directory + "blank_card_{}" + IMAGE_EXT
@@ -51,7 +60,8 @@ class CardImage(Tkinter.Button, object):
                 "card_suit must one of these: {}, was {}".format(
                     "Hearts Diamonds Clubs Spades".split(), card_suit))
 
-    def add_symbol(self, image, symbol, cords):
+    @staticmethod
+    def add_symbol(image, symbol, cords):
         """Adds the symbol to the image at the given cords. The cords is a
         tuple of four numbers representing the top left and bottom right edges
         of the symbol's image"""
