@@ -10,11 +10,11 @@ IMAGE_EXT = ".gif"
 # Default symbol size: 20x20
 SYMBOL_SIZE = (20, 20) # Size of the chunk that denotes a card's rank (x, y)
 
-RANK_TOP_CORDS = (7, 8, 27, 28) # Cords for the top rank symbol
-RANK_BOTTOM_CORDS = (115, 177, 135, 197) # Cords for the bottom rank symbol
+RANK_TOP_CORDS = (7, 10, 27, 30) # Cords for the top rank symbol
+RANK_BOTTOM_CORDS = (118, 175, 138, 195) # Cords for the bottom rank symbol
 
 SUIT_TOP_CORDS = (7, 32, 27, 52) # Cords for the top suit symbol
-SUIT_BOTTOM_CORDS = (113, 153, 133, 173) # Cords for the bottom suit symbol
+SUIT_BOTTOM_CORDS = (118, 155, 138, 175) # Cords for the bottom suit symbol
 
 class CardImage(Tkinter.Button, object):
     """Image representation of a card"""
