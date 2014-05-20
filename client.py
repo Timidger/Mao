@@ -74,7 +74,7 @@ try:
     root.wm_title("Mao: Version 1.0")
     main = Display(root, client)
     root.geometry("950x600+10+10")
-    #root.resizable(width=False, height=False)
+    root.resizable(width=False, height=False)
     root.mainloop()
 finally:
     client.disconnect()
