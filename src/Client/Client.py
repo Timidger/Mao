@@ -24,7 +24,8 @@ class Client(object):
         assert type(self.player) == Player
         self.pile = Pile()
         self.send("Give me the pile!")#Server needs to wait for the request
-        self.pile.add(self.receive()[0])
+        # I literally have no idea why it's reversed, but it is
+        self.pile.add(reversed(self.receive()[0]))
         self.listener = threading.Thread(target = self.listen)
         self._connected = threading.Event()
         self.listener.start()
