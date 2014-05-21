@@ -19,3 +19,7 @@
         - Player chat, with the ability to send messages to players
             - "Whispering" could be an interesting feature
                 - Perhaps also allow a way to easily implement a "No whispering" rule?
+
+    - Fix the server connection prompt
+
+    - Add proper Error handling, such as not being able to connect to a server or when someone is disconnected
