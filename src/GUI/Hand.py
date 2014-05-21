@@ -12,8 +12,7 @@ from collections import OrderedDict
 from ..Base.Card import Card
 from ..Client.Client import Client
 from ..Base import OptionsParser
-from .CardImage import CardImage
-
+import CardImage
 
 class Hand(Tkinter.Canvas, object):
     def __init__(self, master, Client):
@@ -36,6 +35,7 @@ class Hand(Tkinter.Canvas, object):
 
 
         self.cards = OrderedDict() # {Card: Button}
+        self.card_images = set()
         self.Client = Client
         self._send_lock = threading.Lock()
         self.create_widgets()
@@ -51,9 +51,13 @@ class Hand(Tkinter.Canvas, object):
         assert type(card) == Card, (
         "{} (a {}) must be a Card!".format(card, type(card)))
         self._send_lock.acquire()
-        card = CardImage(self.frame,card)
-        card.config(command=lambda card=card: self.send_card(card.card))
-        self.cards.update({card.card: card})
+        card_image = CardImage.make_card_image(card.rank, card.suit)
+        # So it is not garbage collected
+        self.card_images.add(card_image)
+        card_button = Tkinter.Button(self.frame)
+        card_button.config(command=lambda card=card: self.send_card(card),
+                           image=card_image)
+        self.cards.update({card: card_button})
         self._send_lock.release()
 
     def update_hand(self):

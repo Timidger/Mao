@@ -9,7 +9,7 @@ import Tkinter
 import Queue
 import threading
 from ..Client.Client import Client
-from .CardImage import CardImage
+import CardImage
 
 
 class Stack(Tkinter.Frame, object):
@@ -22,7 +22,16 @@ class Stack(Tkinter.Frame, object):
         self.listener.start()
 
     def update_top_card(self):
-        self.top_card = CardImage(self, self.Client.pile.top_card)
+        # Clubs has a black border
+        if not self.Client.pile.top_card:
+            image = CardImage.get_blank_card("Clubs")
+            self.top_card_image = CardImage.prepare_for_tkinter(image)
+        else:
+            rank, suit = (self.Client.pile.top_card.rank,
+                         self.Client.pile.top_card.suit)
+            self.top_card_image = CardImage.make_card_image(rank, suit)
+
+        self.top_card = Tkinter.Button(self, image=self.top_card_image)
         self.top_card.grid()
 
     def update_display(self):
