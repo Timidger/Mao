@@ -23,7 +23,8 @@ class Stack(Tkinter.Frame, object):
 
     def update_top_card(self):
         # Clubs has a black border
-        if not self.Client.pile.top_card:
+        card = self.Client.pile.top_card
+        if not card.rank and not card.suit:
             image = CardImage.get_blank_card("Clubs")
             self.top_card_image = CardImage.prepare_for_tkinter(image)
         else:
