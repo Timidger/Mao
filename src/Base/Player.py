@@ -38,7 +38,7 @@ class Player(object):
 
     def __eq__(self, other):
         assert(isinstance(other, Player)),
-            "{} must be a player!".format(other)
+        "{} must be a player!".format(other)
         return other.name == self.name
 
     def __repr__(self):

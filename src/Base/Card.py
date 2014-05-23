@@ -25,14 +25,11 @@ class Card(object):
 
     @suit.setter
     def suit(self, value):
+        valid_values = SUITS + (WILD_CARD, None)
         assert(value in SUITS or value == WILD_CARD), (
-            "Suit should be in {}, was {}".format(
-                SUITS + (WILD_CARD,), value))
+            "Suit should be one these:{}, was {}".format(
+                valid_values, value))
         self._suit = value
-
-    @suit.deleter
-    def suit(self):
-        self._suit = None
 
     @property
     def rank(self):
@@ -41,14 +38,11 @@ class Card(object):
 
     @rank.setter
     def rank(self, value):
+        valid_values = RANKS + (WILD_CARD, None)
         assert(value in RANKS or value == WILD_CARD), (
-            "Rank should be in {}, was {}".format(
-                RANKS + (WILD_CARD,), value))
+            "Rank should be one of these types:{}, was {}".format(
+                valid_values, value))
         self._rank = value
-
-    @rank.deleter
-    def rank(self):
-        self._rank = None
 
     @staticmethod
     def is_similar(card, other_card):
