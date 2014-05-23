@@ -13,6 +13,7 @@ from .Deck import Deck
 from .Stack import Stack
 from .Hand import Hand
 from .Chat import Chat
+from .PlayerList import PlayerList
 
 
 class Display(Tkinter.Frame, object):
@@ -45,11 +46,13 @@ class Display(Tkinter.Frame, object):
         self.pile = Stack(self.master, self.client)
         self.hand = Hand(self.master, self.client)
         self.chat = Chat(self.master, self.client)
+        self.playerlist = PlayerList(self.master, self.client)
 
         self.deck.grid(column = 0, row = 1)
         self.pile.grid(column = 2, row = 1)
         self.hand.grid(column = 1, row = 0)
         self.chat.grid(column = 1, row = 1)
+        self.playerlist.grid(column=0, row=0)
 
     def destroy(self):
         try:

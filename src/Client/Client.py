@@ -33,6 +33,7 @@ class Client(object):
         self.card_queue = Queue.Queue()
         self.pile_queue = Queue.Queue()
         self.players = None
+        self.last_player = None
 
     def is_running(self):
         return not self._connected.is_set()
@@ -126,7 +127,10 @@ class Client(object):
                             self.player.add_card(card)
                             self.card_queue.put(card)
                     elif all((type(player) == str for player in data)):
-                        self.players = data
+                        if len(data) == 1: # Last player who played
+                            self.last_player = data[0]
+                        else:
+                            self.players = data
                     else:
                         raise KeyError, (
                         '{} was not all Cards or strings'.format(

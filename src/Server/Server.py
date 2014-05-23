@@ -73,6 +73,9 @@ class Server(object):
                     threading.Thread(name = 'Listening to {0} at {1}'.format(
                         player.name, address), target = self.listen,
                         args = (client, player)).start()
+                    names = tuple(
+                    player.name for player in self.player_handler.players)
+                    self.send_all(names)
                 else:
                     Server.send('', client)
                     client.close()
@@ -267,6 +270,7 @@ class Server(object):
                     self.player_handler.get_current_player())
                 if self.constantly_punish(self.player_handler.current_player,
                 penalty_num, timer, self._main_event):
+                    self.send_all(self.player_handler.current_player)
                     self.player_handler.update_order()
                     self.player_handler.next_player()
                     self._main_event.clear()
