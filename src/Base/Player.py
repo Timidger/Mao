@@ -14,7 +14,7 @@ class Player(object):
             self.hand = []
         else:
             self.hand = list(hand)
-        assert(type(name) is str), "{} must be a string!".format(name)
+        assert(isinstance(name, str)), "{} must be a string!".format(name)
         self.name = name
 
     def get_card(self, index):

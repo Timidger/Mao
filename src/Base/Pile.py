@@ -41,7 +41,7 @@ class Pile(list, object):
     def add(self, card, index=0):
         """Adds the card to the pile at the appropriate index, which is the
         top card by default"""
-        assert(isinstance(card, Card), "Tried to add a non-card!")
+        assert(isinstance(card, Card)), "Tried to add a non-card!"
         self.insert(index, card)
 
     def __getitem__(self, index):
