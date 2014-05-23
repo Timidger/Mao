@@ -11,7 +11,9 @@ WILD_CARD = "*"
 
 
 class Card(object):
+
     """A card that has a suit and rank"""
+
     def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank

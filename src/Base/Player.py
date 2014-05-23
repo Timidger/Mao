@@ -7,7 +7,9 @@ Created on Fri Dec 28 13:14:12 2012
 
 
 class Player(object):
+
     """Player which has a unique name and a hand of cards"""
+
     def __init__(self, name, hand=None):
         """Creates a new player for a game which has a hand and name"""
         if hand is None:
@@ -35,7 +37,8 @@ class Player(object):
         return len(self.hand)
 
     def __eq__(self, other):
-        assert(type(other) == Player), "{} must be a player!".format(other)
+        assert(isinstance(other, Player)),
+            "{} must be a player!".format(other)
         return other.name == self.name
 
     def __repr__(self):

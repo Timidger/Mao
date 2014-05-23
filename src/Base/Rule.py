@@ -9,10 +9,12 @@ from inspect import getargspec
 
 
 class Rule(object):
+
     """Object that holds the information of a Mao game rule. Has a name for
     identification, a trigger to know when to execute, and a function to
     execute. The function requires a single argument which represent a server
     object"""
+
     def __init__(self, name, trigger, function):
         """Rule that has a name, trigger, and function to execute"""
         self.name = name
