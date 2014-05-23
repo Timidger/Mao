@@ -66,9 +66,6 @@ class Card(object):
     def __nq__(self, other_card):
         return not self.__eq__(other_card)
 
-    def __repr__(self):
-        return "Card with rank {} and suit {}".format(self.rank, self.suit)
-
     def __str__(self):
         return "{} of {}".format(self.rank, self.suit)
 
