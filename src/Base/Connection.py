@@ -36,10 +36,10 @@ class Connection(socket.socket, object):
                 another message is found, that is also returned"""
                 # This not part of another message from a recursive call
                 if not message:
-                    # So get the start of the message
-                    received = connection.recv(2048).split(':', 1)
-                else:
-                    received = message.split(':', 1)
+                    # So get the start of the message in string form
+                    message = connection.recv(2048).decode(encoding='utf-8')
+                # Split up the message length and the message
+                received = message.split(':', 1)
                 # Get the decoded message length and message
                 length.decode(), data.decode() = received
                 # Convert the length to an int and check that it is valid
@@ -75,3 +75,14 @@ class Connection(socket.socket, object):
                                             message=second))
                 return data
             return get_message(connection, timeout)
+
+    def constantly_receive(self, connection, queue):
+        """Constantly receives messages from the client and passes it into
+        the given queue to be handled by the server"""
+        # It is automatically closed when the loop ends
+        with connection:
+            # Infinite loop, unless there is an error
+            while True:
+                data = self.receive(connection, timeout=None)
+                for item in data:
+                    queue.put(item)
