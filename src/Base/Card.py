@@ -56,7 +56,8 @@ class Card(object):
         return any((self.rank, self.suit))
 
     def __eq__(self, other_card):
-        assert(type(other_card) == Card), "Can't compare card and non-card!"
+        if not isinstance(other_card, Card):
+            return False
         ranks = (self.rank, other_card.rank)
         suits = (self.suit, other_card.suit)
         ranks_equal = WILD_CARD in ranks or ranks[0] == ranks[1]
