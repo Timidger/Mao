@@ -1,88 +1,114 @@
 # -*- coding: utf-8 -*-
 
 import socket
-import threading
 import pickle
-import sys
-import time
-import random
-import Queue
-from ..Base import Player
-from ..Base.Card import Card
-from ..Base import Pile
 
 class Connection(socket.socket, object):
     def __init__(self, ip, port):
         super(Connection, self).__init__(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((ip_address or socket.getfqdn(), port))
+        self.connect((ip, port))
 
-    def send(self, data, connection):
-        # Pickle the data, so abstract data types can be transferred
-        pickled = pickle.dumps(data.encode()) + b';'
-        connection.send(bytes(len(pickled)) + b':')
-        connection.sendall(pickled)
+def send(data, connection):
+    # Pickle the data, so abstract data types can be transferred
+    pickled = pickle.dumps(data) + b';'
+    length = pickle.dumps(len(pickled)) + b':'
+    connection.send(length)
+    total = 0
+    while total < len(pickled):
+        sent = connection.send(pickled[total:])
+        if sent == 0:
+            raise socket.error("Connection Broken")
+        else:
+            total += sent
+    return total
+    #connection.sendall(pickled)
 
-
-    # Lets put a try, finally clause in here, clean up the code a bit so it's more readable (the comments were a great start), and see if we even need to implement that recursion (I have a feeling we don't)
-    # Catch the Socket error (not timeout), close the connection, then re throw the same exception (so higher levels can deal with it)
-
-    def receive(self, connection, timeout=10):
-            """Get a response from the server and de-pickles it. If the actual
-            message takes too long (longer than 10 seconds or timeout if given)
-            then a socket.error is raised"""
-            error = socket.error("Connection closed!")
-            def get_message(connection, timeout, message=None):
-                """Recursively get messages from the connection. If part of
-                another message is found, that is also returned"""
-                # This not part of another message from a recursive call
+def receive(connection, timeout=10):
+        """Get a response from the server and de-pickles it. If the actual
+        message takes too long (longer than 10 seconds or timeout if given)
+        then a socket.error is raised"""
+        # Common error when listening to sockets
+        error = socket.error("Connection closed!")
+        # Recursion is used when messages come faster than they can be parsed
+        def get_messages(connection, timeout, message=b""):
+            initial_message = message.split(b':', 1)
+            # Check if we have the entire message size
+            if len(initial_message) < 2:
+                # If not, read from the socket
+                message = connection.recv(2048)
+                # When the connection calls the close function
                 if not message:
-                    # So get the start of the message in string form
-                    message = connection.recv(2048).decode(encoding='utf-8')
-                # Split up the message length and the message
-                received = message.split(':', 1)
-                # Get the decoded message length and message
-                length.decode(), data.decode() = received
-                # Convert the length to an int and check that it is valid
-                length = int(length)
-                if not length:
                     raise error
-                # Remember the old timeout to be reset later
-                old_timeout = connection.gettimeout()
-                # For slow connections, this value can be set higher
-                connection.settimeout(timeout)
-                # While we don't have the whole message
-                while len(data) < length:
-                    # Read from the socket
-                    message = connection.recv(2048)
-                    # Connection abrubtly closed
-                    if not message:
-                        raise error
-                    data += message
-                # reset the timeout
-                connection.settimeout(old_timeout)
-                # Split the messages up in case more than one were read
-                first, second = data.rsplit(';', 1)
-                if first == '':
-                    raise error
-                # Depickle the data structure
-                first = pickle.loads(first)
-                data = [first] # I feel like we data should be a different name
-                # If we got a bit of a second message
-                if second:
-                    print "Message was too long!"
-                    # Get that one too
-                    data.extend(get_message(connection, timeout=10,
-                                            message=second))
-                return data
-            return get_message(connection, timeout)
+            length, data = message.split(b':', 1)
+            # Unpickle the length and verify that it is a number
+            length = int(pickle.loads(length))
+            # An empty string means the other side disconnected
+            if not length:
+                raise error
+            # Save the old timeout so it can be re-instated afterwards
+            old_timeout = connection.gettimeout()
+            connection.settimeout(timeout)
+            # Get ALL the data
+            while len(data) < length:
+                some_data = connection.recv(2048)
+                # Add to the data we already have
+                data += some_data
+            # Reset the timeout
+            connection.settimeout(old_timeout)
+            # Get the first and second message (if there is a second message)
+            first, second = data.rsplit(b';', 1)
+            first = pickle.loads(first)
+            # An empty string means the other side disconnected
+            if first == '':
+                raise error
+            messages = [first]
+            # If we got some of the next message, get the rest of that one
+            if second:
+                second = get_messages(connection, timeout, message=second)
+                messages.extend(second)
+            return messages
+        return get_messages(connection, timeout)
 
-    def constantly_receive(self, connection, queue):
-        """Constantly receives messages from the client and passes it into
-        the given queue to be handled by the server"""
-        # It is automatically closed when the loop ends
-        with connection:
-            # Infinite loop, unless there is an error
-            while True:
-                data = self.receive(connection, timeout=None)
-                for item in data:
-                    queue.put(item)
+def constantly_receive(connection, queue):
+    """Constantly receives messages from the client and passes it into
+    the given queue to be handled by the server"""
+    # It is automatically closed when the loop ends
+    with connection:
+        # Infinite loop, unless there is an error
+        while True:
+            data = receive(connection, timeout=None)
+            for item in data:
+                queue.put(item)
+
+if __name__ == "__main__":
+    from Card import Card
+    try:
+        import Queue as queue
+    except ImportError:
+        import queue
+    import threading
+    import time
+    # Set up the echo server
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((socket.getfqdn(), 9000))
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.listen(5)
+    queue = queue.Queue()
+    def echo(server, queue):
+        connection, address = server.accept()
+        threading.Thread(target=constantly_receive, args=(connection, queue)).start()
+        while True:
+            # get length, which we don't care about
+            message = queue.get()
+            if not message:
+                break
+            print("Message Received: {}".format(message))
+    threading.Thread(target=echo, args=(server, queue), daemon=True).start()
+
+    # This is a connection to the server, not necessarily a "client"
+    # This would simply be the networking part of the client
+    server_connection = Connection(socket.getfqdn(), 9000)
+    with server_connection:
+        send("HEY!" * 4, server_connection)
+        send([5] * 90, server_connection)
+        send(Card("Hearts", "5"), server_connection)
