@@ -16,7 +16,14 @@ class Connection(socket.socket, object):
         super(Connection, self).__init__(socket.AF_INET, socket.SOCK_STREAM)
         # Make the connection reusable after this one dies
         self.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # The pile where data can be read from the socket safely and easily
         self.messages = queue.Queue()
+        # Some flags that can be used to anticipate events
+        self._is_connected = threading.Event()
+        self._message_received = threading.Event()
+
+    def is_connected(self):
+        return not self._is_connected.is_set()
 
     def _send_to(self, data, connection):
         # Pickle the data, so abstract data types can be transferred
@@ -83,8 +90,11 @@ class Connection(socket.socket, object):
                 data += some_data
             # Reset the timeout
             connection.settimeout(old_timeout)
+            self._message_received.set()
             # Tell them we got the message
             connection.send(pickle.dumps(length))
+            # Just a quick flag to show it was received
+            self._message_received.clear()
             # Get the first and second message (if there is a second message)
             first, second = data.rsplit(b';', 1)
             first = pickle.loads(first)
@@ -118,6 +128,7 @@ class Client(Connection, object):
         self._send_to(data, self)
 
     def disconnect(self, *args):
+        self._is_connected.set()
         super(Client, self).disconnect(self)
 
 
@@ -128,6 +139,8 @@ class Server(Connection, object):
         self.bind((ip, port))
         super(Server, self).listen(5)
         self.connections = {}   # {Connection object: IP address}
+        # New client added
+        self._new_client = threading.Event()
 
     def accept_connections(self):
         while True:
@@ -137,6 +150,8 @@ class Server(Connection, object):
                 connection.send("Same ip as other user! Connnection aborted!")
                 connection.close()
                 raise socket.error("IP {} already taken!".format(address))
+            self._new_client.set()
+            self._new_client.clear()
             # Add the connection to the list of connections
             self.connections.update({connection: address})
             # Set up a socket to listen to the data from the connection
@@ -153,6 +168,7 @@ class Server(Connection, object):
             self.connections.pop(connection)
 
     def shutdown(self):
+        self._is_connected.set()
         self.close()
         # Sometimes the dict size changes while it is running
         # This causes a RunTimeError to happen, stopping it from disconnecting
@@ -172,6 +188,8 @@ if __name__ == "__main__":
         while True:
             # get length, which we don't care about
             try:
+                # This should not happen, try increasing timeout
+                server._message_received.wait(timeout=.1)
                 message = server.messages.get(timeout=1)
                 print("Message Received: {}".format(message))
             except queue.Empty:
@@ -205,7 +223,9 @@ if __name__ == "__main__":
     client = Client(socket.getfqdn(), 9000)
     # This time the server disconnects
     server.disconnect(client)
+    assert server.is_connected(), "The server stopped running!"
     time.sleep(.1)
     assert not server.connections, error_message
     # Server no longer takes requests, flags are set so the game can stop
     server.shutdown()
+    assert not server.is_connected(), "The server is still running!"
