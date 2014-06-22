@@ -31,11 +31,12 @@ class Pile(list, object):
         and then shuffled before drawing continues"""
         # Add before the draw, in case there are not any cards left
         if len(self) <= MINIMUM_DECK_LENGTH:
-            new_cards = [Card(suit, rank) for rank in RANKS
-                         for suit in SUITS]
-            self.add(new_cards)
+            for rank in RANKS:
+                for suit in SUITS:
+                    new_card = Card(suit, rank)
+                    self.add(new_card)
             self.shuffle()
-        card = self.remove()
+        card = self.pop()
         return card
 
     def add(self, card, index=0):

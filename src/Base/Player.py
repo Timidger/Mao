@@ -27,6 +27,12 @@ class Player(object):
         "Add the card to the player's hand at the index (defaults to -1)"
         self.hand.insert(index, card)
 
+    def __next__(self):
+        try:
+            return self.get_card(0)
+        except IndexError as e:
+            raise StopIteration("Out of cards!")
+
     def __contains__(self, card):
         return card in self.hand
 
@@ -37,7 +43,7 @@ class Player(object):
         return len(self.hand)
 
     def __eq__(self, other):
-        assert(isinstance(other, Player)),
+        assert(isinstance(other, Player))
         "{} must be a player!".format(other)
         return other.name == self.name
 
