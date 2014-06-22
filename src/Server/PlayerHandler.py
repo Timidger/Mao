@@ -95,8 +95,8 @@ class PlayerHandler(object):
         player"""
         return self.get_player(key)
 
-    def __iter__(self):
-        return self
+    def __contains__(self, key):
+        return key in self.players
 
     def __next__(self):
         try:
