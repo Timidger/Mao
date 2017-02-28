@@ -6,16 +6,15 @@ Created on Fri Dec 28 13:14:57 2012
 """
 import os
 import threading
-from lupa import LuaRuntime
 from ..Base import Card
 
 
 class RuleHandler(object):
     """Holds rules to be executed from input corresponding to triggers."""
-    def __init__(self, rules = None):
+    def __init__(self, lua, rules = None):
         """Rules should be a list or tuple of rule objects."""
         self.rules = {} # {rule object: rule script}
-        self.lua = LuaRuntime() # Lua runtime environment, used by the rules.
+        self.lua = lua # Lua runtime environment, used by the rules.
         if rules:
             for rule in tuple(rules):
                 self.add_rule(rule)

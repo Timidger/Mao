@@ -1,17 +1,32 @@
 import time
 import threading
 import atexit
+from os import listdir
+from os.path import isfile, join
 from src.Server.Server import Server
 from src.Server.PlayerHandler import PlayerHandler
 from src.Server.RuleHandler import RuleHandler
 from src.Base.Rule import Rule
 from src.Base.OptionsParser import load_configuration
 
-start_time = time.time()
+from lupa import LuaRuntime
 
+start_time = time.time()
+lua = LuaRuntime()
+rule_path = "./Rules/"
+rule_files = [join(rule_path,f) for f in listdir(rule_path)
+              if isfile(join(rule_path, f))]
+rules = []
+for f_ in rule_files:
+    with open(f_, "r") as f:
+        lines = "".join(f.readlines())
+        lua_func = lua.eval(lines)
+        rule = Rule(f_, None, lua_func)
+        rules.append(rule)
 config_parser = load_configuration("server")
-rules = []#[Rule('Test Rule', None, test_rule)]
-RH = RuleHandler(rules)
+
+#rules = []#[Rule('Test Rule', None, test_rule)]
+RH = RuleHandler(lua, rules)
 PH = PlayerHandler([])
 ip = config_parser.get('Misc.', 'ip')
 port = config_parser.getint('Misc.', 'port')
