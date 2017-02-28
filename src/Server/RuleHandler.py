@@ -6,6 +6,7 @@ Created on Fri Dec 28 13:14:57 2012
 """
 import os
 import threading
+from lupa import LuaRuntime
 from ..Base import Card
 
 
@@ -14,6 +15,7 @@ class RuleHandler(object):
     def __init__(self, rules = None):
         """Rules should be a list or tuple of rule objects."""
         self.rules = {} # {rule object: rule script}
+        self.lua = LuaRuntime() # Lua runtime environment, used by the rules.
         if rules:
             for rule in tuple(rules):
                 self.add_rule(rule)
@@ -44,7 +46,7 @@ class RuleHandler(object):
         thread. Returns the list of the threads"""
         # Generate the threads that will run the rules in parallel
         threads = [threading.Thread(name="Thread for {}".format(rule.name,
-                                    target=rule.script,
+                                    target=rule.run_lua(self.lua),
                                     args=server))
                    for rule in rules]
         for thread in threads:
