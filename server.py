@@ -26,7 +26,9 @@ pile = server.pile
 
 print 'Server at {}:{}'.format(ip or 'localhost', port)
 MAIN_THREAD = threading.Thread(target = server.main_loop)
-print "Type 'MAIN_THREAD.start()' to start the game!"
+#print "Type 'MAIN_THREAD.start()' to start the game!"
+MAIN_THREAD.start()
+MAIN_THREAD.join()
 
 def uptime():
     print "The server has been running for {} seconds".format(
