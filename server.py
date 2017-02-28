@@ -9,11 +9,8 @@ from src.Base.OptionsParser import load_configuration
 
 start_time = time.time()
 
-def test_rule(server_object):
-    global a
-    a = exit
 config_parser = load_configuration("server")
-rules = [Rule('Test Rule', None, test_rule)]
+rules = []#[Rule('Test Rule', None, test_rule)]
 RH = RuleHandler(rules)
 PH = PlayerHandler([])
 ip = config_parser.get('Misc.', 'ip')
@@ -26,9 +23,7 @@ pile = server.pile
 
 print 'Server at {}:{}'.format(ip or 'localhost', port)
 MAIN_THREAD = threading.Thread(target = server.main_loop)
-#print "Type 'MAIN_THREAD.start()' to start the game!"
 MAIN_THREAD.start()
-MAIN_THREAD.join()
 
 def uptime():
     print "The server has been running for {} seconds".format(
@@ -42,3 +37,6 @@ def kick(player_name):
         raise KeyError, 'No player named "{}"!'.format(player_name)
 
 atexit.register(server.shutdown)
+
+while True:
+    time.sleep(1)
