@@ -1,6 +1,15 @@
 #Mao
 [Mao](http://en.wikipedia.org/wiki/Mao_%28card_game%29) is a card game, usually played amongst teenagers, where the rules are dynamic. Usually only one player (known as the Grand Chairman) knows the rules and is entrusted to enforce them fairly and consistently. Because this is a demanding job, especially when they also act as a player in the game, in this adaption of the game the computer handles the rules. This way, all the players can participate as clueless players.
 
+#For educational purposes only
+I wrote this originally in high school, as a learning excercise to learn Python/OO. Today, I use it as a means to try out new languages. Implementing a basic, networked card game is enough to test the strengths and weaknesess of a language.
+
+The test is contrived, but due to its size it's better than most conventional tests (which are usually < 1000 lines of code). This was implemented originally with roughly 1300 lines of Python (including the GUI!), so it's usually possible to get around that with other languages, +- a few hundred lines of code.
+
+There is one big benifit to this particular project in testing languages: you can work from either side (client or server) and test it out against this reference implementation because it all talks through a Unix socket.
+
+The only way the original implementation differs from the current is that it used Python as the scripting language for rules, not Lua. Lua is much easier to embed, so that is what I will use going forward.
+
 ##Rules
 Unlike most adaptations of the card game, which hard-code the most widely known rules and call it a day, rules are constructed from functions in Python modules. Each function requires at least one parameter, `server`, which represents the entire Server object. Though passing the entire Server gives rules a lot of power, this is balanced by both the availability of the source code and the fact that these functions should be written by the Server owner only. If a player is to make a rule, it would have to be made safe so that he does not do anything malicious. This last part has not been implemented yet, as I have yet to find a safe way to do this.
 
